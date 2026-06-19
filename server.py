@@ -1,17 +1,11 @@
-from uuid import UUID
-
 import socketio
 import uvicorn
-from datetime import datetime
 
+from decorators.sockets_decorators import require_auth, require_table
 from models import Player, Table
+from state import clients, sio, tables
 
-
-sio = socketio.AsyncServer(async_mode="asgi")
 app = socketio.ASGIApp(sio)
-
-clients = {}
-tables: dict[int, Table] = {}
 
 
 @sio.event
@@ -30,42 +24,37 @@ async def disconnect(sid):
 
 # custom events
 @sio.on("create_table")
-async def create_table(sid):
-    username = clients.get(sid, None)
-    if not username:
-        await sio.emit("error", {"message": "User not authenticated."}, room=sid)
-        return
+@require_auth
+async def create_table(sid, *, username, **kwargs):
     player = Player(name=username, sid=sid)
-    # Create a new table with the provided data
     new_table = Table(player)
     tables[new_table.id] = new_table
-
-    # Emit the table ID back to the client
     await sio.emit("table_created", {"table_id": new_table.id}, room=sid)
 
 
 @sio.on("join_table")
-async def join_table(sid, data):
-    username = clients.get(sid, None)
-    if not username:
-        await sio.emit("error", {"message": "User not authenticated."}, room=sid)
-        return
-
-    table_id = data.get("table_id")
-    if table_id is None:
-        await sio.emit("error", {"message": "Table ID is required."}, room=sid)
-        return
-
-    table = tables.get(table_id)
-    if not table:
-        await sio.emit("error", {"message": "Table not found."}, room=sid)
-        return
-
+@require_auth
+@require_table
+async def join_table(sid, data, *, username, table, **kwargs):
     player = Player(name=username, sid=sid)
     table.add_player(player)
-
-    # Emit a success message back to the client
     await sio.emit("joined_table", {"table_id": table.id}, room=sid)
+
+
+@sio.on("start_game")
+@require_auth
+@require_table
+async def start_game(sid, data, *, username, table, **kwargs):
+    if table.players[0].sid != sid:
+        await sio.emit(
+            "error", {"message": "Only the host can start the game."}, room=sid
+        )
+        return
+    try:
+        table.start_game()
+        await sio.emit("game_started", {"table_id": table.id}, room=sid)
+    except ValueError as e:
+        await sio.emit("error", {"message": str(e)}, room=sid)
 
 
 if __name__ == "__main__":
