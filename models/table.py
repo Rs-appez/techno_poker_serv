@@ -17,6 +17,7 @@ class Table:
         self._current_bets: dict[Player, int] = {player: 0 for player in self._players}
 
         self._small_blind_index = 0
+        self._current_player_index = 0
 
     @property
     def id(self):
@@ -29,6 +30,12 @@ class Table:
     @property
     def players(self):
         return tuple(self._players)
+
+    @property
+    def current_player(self):
+        if not self._has_started:
+            return None
+        return self._players[self._current_player_index]
 
     @property
     def table_cards(self):
@@ -68,6 +75,7 @@ class Table:
         if len(self._players) < 2:
             raise ValueError("At least two players are required to start the game.")
         self._has_started = True
+        self._deal_blinds()
 
     def _deal_blinds(self):
         small_blind_bet, big_blind_bet = self._small_blind_value, self._big_blind_value
