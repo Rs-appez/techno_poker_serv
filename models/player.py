@@ -7,6 +7,7 @@ class Player:
         self._sid = sid
         self._hand: list[Card] = []
         self._chips = 1000
+        self._is_folded = False
 
     @property
     def name(self):
@@ -21,6 +22,10 @@ class Player:
         return self._hand
 
     @property
+    def is_folded(self):
+        return self._is_folded
+
+    @property
     def chips(self):
         return self._chips
 
@@ -33,7 +38,12 @@ class Player:
     def bet(self, amount: int):
         if amount > self._chips:
             raise ValueError("Not enough chips to bet that amount.")
+        elif amount <= 0:
+            raise ValueError("Bet amount must be greater than zero.")
         self._chips -= amount
 
     def win(self, amount: int):
         self._chips += amount
+
+    def fold(self):
+        self._hand = []
