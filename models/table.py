@@ -77,6 +77,59 @@ class Table:
         self._has_started = True
         self._deal_blinds()
 
+    def place_bet(self, player: Player, amount: int):
+        current_max_bet = max(self._current_bets.values())
+        player_current_bet = self._current_bets[player]
+        if player_current_bet + amount < current_max_bet:
+            raise ValueError(
+                f"Bet must be at least {current_max_bet - player_current_bet} to call."
+            )
+        player.bet(amount)
+        self._current_bets[player] += amount
+        self._advance_turn()
+
+    def fold(self, player: Player):
+        player.fold()
+        self._advance_turn()
+
+    def call(self, player: Player) -> int:
+        current_max_bet = max(self._current_bets.values())
+        player_current_bet = self._current_bets[player]
+        call_amount = current_max_bet - player_current_bet
+        if call_amount > 0:
+            player.bet(call_amount)
+            self._current_bets[player] += call_amount
+        self._advance_turn()
+
+        return call_amount
+
+    def _advance_turn(self):
+        if not self._check_end_game():
+            n = len(self._players)
+            for _ in range(n):
+                self._current_player_index = (self._current_player_index + 1) % n
+                if not self._players[self._current_player_index].is_folded:
+                    return
+
+    def _check_end_game(self) -> bool:
+        active_players = [player for player in self._players if not player.is_folded]
+        if len(active_players) == 1:
+            winner = active_players[0]
+            winner.win(self.pot)
+            self._reset_game()
+            return True
+        return False
+
+    def _reset_game(self):
+        self._deck = Deck.create_standard_deck()
+        self._table_cards = []
+        self._current_bets = {player: 0 for player in self._players}
+        for player in self._players:
+            player.reset_hand()
+        self._small_blind_index = (self._small_blind_index + 1) % len(self._players)
+        self._current_player_index = self._small_blind_index
+        self._deal_blinds()
+
     def _deal_blinds(self):
         small_blind_bet, big_blind_bet = self._small_blind_value, self._big_blind_value
 
