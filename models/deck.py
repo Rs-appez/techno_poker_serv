@@ -40,10 +40,13 @@ class Deck:
     cards: list[Card]
 
     @classmethod
-    def create_standard_deck(cls) -> "Deck":
-        return Deck(
+    def create_standard_deck(cls, shuffled=True) -> "Deck":
+        deck = Deck(
             cards=[Card(rank=rank, suit=suit) for suit in Suit for rank in Rank]
         )
+        if shuffled:
+            deck.shuffle()
+        return deck
 
     def shuffle(self):
         random.shuffle(self.cards)
@@ -52,3 +55,7 @@ class Deck:
         if not self.cards:
             raise ValueError("Deck is empty")
         return self.cards.pop()
+
+    def reset(self):
+        self.cards = [Card(rank=rank, suit=suit) for suit in Suit for rank in Rank]
+        self.shuffle()
