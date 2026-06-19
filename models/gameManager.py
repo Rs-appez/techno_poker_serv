@@ -45,8 +45,53 @@ class GameManager:
             try:
                 table.place_bet(player, amount)
                 await self.sio.emit(
-                    "bet_placed",
-                    {"table_id": table.id, "player": player.name, "amount": amount},
+                    "player_action",
+                    {
+                        "action": "bet",
+                        "table_id": table.id,
+                        "player": player.name,
+                        "amount": amount,
+                    },
+                    room=f"table_{table.id}",
+                )
+
+            except ValueError as e:
+                await self.sio.emit("error", {"message": str(e)}, room=sid)
+
+        @self.sio.on("fold")
+        @auth
+        @table
+        @current_player
+        async def fold(sid, data, *, player: Player, table: Table, **kwargs):
+            try:
+                table.fold(player)
+                await self.sio.emit(
+                    "player_action",
+                    {
+                        "action": "fold",
+                        "table_id": table.id,
+                        "player": player.name,
+                    },
+                    room=f"table_{table.id}",
+                )
+            except ValueError as e:
+                await self.sio.emit("error", {"message": str(e)}, room=sid)
+
+        @self.sio.on("call")
+        @auth
+        @table
+        @current_player
+        async def call(sid, data, *, player: Player, table: Table, **kwargs):
+            try:
+                amount_to_call = table.call(player)
+                await self.sio.emit(
+                    "player_action",
+                    {
+                        "action": "call",
+                        "table_id": table.id,
+                        "player": player.name,
+                        "amount": amount_to_call,
+                    },
                     room=f"table_{table.id}",
                 )
 
