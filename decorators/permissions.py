@@ -51,3 +51,40 @@ def in_table(sio, tables):
         return wrapper
 
     return decorator
+
+
+def is_host(sio):
+    def decorator(handler):
+        @wraps(handler)
+        async def wrapper(sid, data, *args, table, **kwargs):
+            if table.players[0].sid != sid:
+                await sio.emit(
+                    "error",
+                    {"message": "Only the host can perform this action"},
+                    room=sid,
+                )
+                return
+            return await handler(sid, data, *args, table=table, **kwargs)
+
+        return wrapper
+
+    return decorator
+
+
+def is_current_player(sio):
+    def decorator(handler):
+        @wraps(handler)
+        async def wrapper(sid, data, *args, table, **kwargs):
+            current_player = table.current_player
+            if not current_player or current_player.sid != sid:
+                await sio.emit(
+                    "error",
+                    {"message": "It's not your turn to play"},
+                    room=sid,
+                )
+                return
+            return await handler(sid, data, *args, table=table, **kwargs)
+
+        return wrapper
+
+    return decorator
