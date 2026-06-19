@@ -20,48 +20,48 @@ class Table:
         self._current_player_index = 0
 
     @property
-    def id(self):
+    def id(self) -> int:
         return id(self)
 
     @property
-    def has_started(self):
+    def has_started(self) -> bool:
         return self._has_started
 
     @property
-    def players(self):
+    def players(self) -> tuple[Player, ...]:
         return tuple(self._players)
 
     @property
-    def current_player(self):
+    def current_player(self) -> Player | None:
         if not self._has_started:
             return None
         return self._players[self._current_player_index]
 
     @property
-    def table_cards(self):
+    def table_cards(self) -> tuple[Card, ...]:
         return tuple(self._table_cards)
 
     @property
-    def pot(self):
+    def pot(self) -> int:
         return sum(self._current_bets.values())
 
     @property
-    def small_blind_value(self):
+    def small_blind_value(self) -> int:
         return self._small_blind_value
 
     @property
-    def big_blind_value(self):
+    def big_blind_value(self) -> int:
         return self._big_blind_value
 
     @property
-    def small_blind_player(self):
+    def small_blind_player(self) -> Player:
         return self._players[self._small_blind_index]
 
     @property
-    def big_blind_player(self):
+    def big_blind_player(self) -> Player:
         return self._players[(self._small_blind_index + 1) % len(self._players)]
 
-    def add_player(self, player: Player):
+    def add_player(self, player: Player) -> None:
         if self._has_started:
             raise ValueError("Cannot join a game that has already started.")
         if player in self._players:
@@ -69,7 +69,7 @@ class Table:
         self._players.append(player)
         self._current_bets[player] = 0
 
-    def start_game(self):
+    def start_game(self) -> None:
         if self._has_started:
             raise ValueError("Game has already started.")
         if len(self._players) < 2:
@@ -77,7 +77,7 @@ class Table:
         self._has_started = True
         self._deal_blinds()
 
-    def place_bet(self, player: Player, amount: int):
+    def place_bet(self, player: Player, amount: int) -> None:
         current_max_bet = max(self._current_bets.values())
         player_current_bet = self._current_bets[player]
         if player_current_bet + amount < current_max_bet:
@@ -88,7 +88,7 @@ class Table:
         self._current_bets[player] += amount
         self._advance_turn()
 
-    def fold(self, player: Player):
+    def fold(self, player: Player) -> None:
         player.fold()
         self._advance_turn()
 
@@ -103,7 +103,7 @@ class Table:
 
         return call_amount
 
-    def _advance_turn(self):
+    def _advance_turn(self) -> None:
         if not self._check_end_game():
             n = len(self._players)
             for _ in range(n):
@@ -120,7 +120,7 @@ class Table:
             return True
         return False
 
-    def _reset_game(self):
+    def _reset_game(self) -> None:
         self._deck = Deck.create_standard_deck()
         self._table_cards = []
         self._current_bets = {player: 0 for player in self._players}
@@ -130,7 +130,7 @@ class Table:
         self._current_player_index = self._small_blind_index
         self._deal_blinds()
 
-    def _deal_blinds(self):
+    def _deal_blinds(self) -> None:
         small_blind_bet, big_blind_bet = self._small_blind_value, self._big_blind_value
 
         self.small_blind_player.bet(small_blind_bet)
@@ -139,10 +139,10 @@ class Table:
         self._current_bets[self.small_blind_player] += small_blind_bet
         self._current_bets[self.big_blind_player] += big_blind_bet
 
-    def _deal_table_cards(self, number: int):
+    def _deal_table_cards(self, number: int) -> None:
         for _ in range(number):
             self._table_cards.append(self._deck.draw())
 
-    def _deal_player_cards(self, player: Player):
+    def _deal_player_cards(self, player: Player) -> None:
         player.add_card_to_hand(self._deck.draw())
         player.add_card_to_hand(self._deck.draw())
