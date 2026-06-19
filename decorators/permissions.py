@@ -83,7 +83,9 @@ def is_current_player(sio):
                     room=sid,
                 )
                 return
-            return await handler(sid, data, *args, table=table, **kwargs)
+            return await handler(
+                sid, data, *args, player=current_player, table=table, **kwargs
+            )
 
         return wrapper
 
