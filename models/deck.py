@@ -55,7 +55,3 @@ class Deck:
         if not self.cards:
             raise ValueError("Deck is empty")
         return self.cards.pop()
-
-    def reset(self):
-        self.cards = [Card(rank=rank, suit=suit) for suit in Suit for rank in Rank]
-        self.shuffle()
