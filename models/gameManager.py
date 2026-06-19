@@ -1,6 +1,6 @@
 from socketio import AsyncServer
 
-from decorators.permissions import require_auth, in_table
+from decorators.permissions import is_current_player, is_host, require_auth, in_table
 from models import Table
 
 
@@ -15,17 +15,15 @@ class GameManager:
 
     def _register_events(self):
         auth = require_auth(self.sio, self.clients)
+        host = is_host(self.sio)
         table = in_table(self.sio, self.tables)
+        current_player = is_current_player(self.sio)
 
         @self.sio.on("start_game")
         @auth
         @table
+        @host
         async def start_game(sid, data, *, username, table, **kwargs):
-            if table.players[0].sid != sid:
-                await self.sio.emit(
-                    "error", {"message": "Only the host can start the game."}, room=sid
-                )
-                return
             try:
                 table.start_game()
                 await self.sio.emit("game_started", {"table_id": table.id}, room=sid)
