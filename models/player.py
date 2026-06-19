@@ -2,14 +2,19 @@ from models import Card
 
 
 class Player:
-    def __init__(self, name):
+    def __init__(self, name, sid):
         self._name = name
+        self._sid = sid
         self._hand: list[Card] = []
         self._chips = 1000
 
     @property
     def name(self):
         return self._name
+
+    @property
+    def sid(self):
+        return self._sid
 
     @property
     def hand(self):
@@ -29,7 +34,6 @@ class Player:
         if amount > self._chips:
             raise ValueError("Not enough chips to bet that amount.")
         self._chips -= amount
-        return amount
 
     def win(self, amount: int):
         self._chips += amount
