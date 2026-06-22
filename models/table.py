@@ -1,6 +1,7 @@
 from random import shuffle
 
 from models import Card, Deck, Player
+from utils.handRanking import find_winner
 
 
 class Table:
@@ -125,6 +126,10 @@ class Table:
                 self._current_player_index = (self._current_player_index + 1) % n
                 if not self._players[self._current_player_index].is_active:
                     return
+        else:
+            for player in self._players:
+                if player.chips == 0:
+                    player.out()
 
     def _check_end_round(self) -> bool:
         active_players = [player for player in self._players if not player.is_active]
@@ -162,7 +167,12 @@ class Table:
 
     def _showdown(self) -> None:
         self._deal_table_cards(5 - len(self._table_cards))
-        pass  # TODO: Implement hand evaluation and determine winner(s)
+        winners = find_winner(
+            self._table_cards, [p for p in self._players if p.is_active]
+        )
+        pot_share = self.pot // len(winners)
+        for winner in winners:
+            winner.win(pot_share)
 
     def _deal_blinds(self) -> None:
         small_blind_bet, big_blind_bet = self._small_blind_value, self._big_blind_value
