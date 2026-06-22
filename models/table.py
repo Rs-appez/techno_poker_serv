@@ -70,7 +70,7 @@ class Table:
 
     @property
     def big_blind_player(self) -> Player:
-        return self._players[(self._small_blind_index + 1) % len(self._players)]
+        return self._players[(self._small_blind_index - 1) % len(self._players)]
 
     def add_player(self, player: Player) -> None:
         if self._has_started:
