@@ -1,6 +1,8 @@
 from decorators.permissions import require_auth, require_table
-from models import GameManager, Table, Player
+from models import Emitter, GameManager, Table, Player
 import socketio
+
+from models.events import ClientEvent
 
 
 class LobbyManager:
@@ -9,8 +11,9 @@ class LobbyManager:
         self.app = socketio.ASGIApp(self.sio)
         self.clients: dict[str, str] = {}
         self.tables: dict[int, Table] = {}
+        self.emit = Emitter(self.sio)
         self._register_events()
-        self.game_manager = GameManager(self.sio, self.clients, self.tables)
+        self.game_manager = GameManager(self.sio, self.emit, self.clients, self.tables)
 
     def _register_events(self):
         auth = require_auth(self.sio, self.clients)
@@ -29,7 +32,7 @@ class LobbyManager:
             print(f"Client disconnected: {sid}, username: {username}")
             self.clients.pop(sid)
 
-        @self.sio.on("list_tables")
+        @self.sio.on(ClientEvent.LIST_TABLES.value)
         @auth
         async def list_tables(sid, *, username, **kwargs):
             tables_info = [
@@ -43,7 +46,7 @@ class LobbyManager:
             ]
             return {"tables": tables_info}
 
-        @self.sio.on("create_table")
+        @self.sio.on(ClientEvent.CREATE_TABLE.value)
         @auth
         async def create_table(sid, *, username, **kwargs):
             player = Player(name=username, sid=sid)
@@ -52,15 +55,11 @@ class LobbyManager:
             await self.sio.enter_room(sid, f"table_{new_table.id}")
             return {"table_id": new_table.id, "num_players": 1, "host_name": username}
 
-        @self.sio.on("join_table")
+        @self.sio.on(ClientEvent.JOIN_TABLE.value)
         @auth
         @table
         async def join_table(sid, data, *, username, table, **kwargs):
             player = Player(name=username, sid=sid)
             table.add_player(player)
             await self.sio.enter_room(sid, f"table_{table.id}")
-            await self.sio.emit(
-                "joined_table",
-                {"new_player": player.name},
-                room=f"table_{table.id}",
-            )
+            await self.emit.joined_table(player, table)
