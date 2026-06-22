@@ -8,7 +8,7 @@ from models.events import ClientEvent
 
 class LobbyManager:
     def __init__(self):
-        self.sio = socketio.AsyncServer(async_mode="asgi")
+        self.sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins="*")
         self.app = socketio.ASGIApp(self.sio, socketio_path="socket.io/")
         self.clients: dict[str, str] = {}
         self.tables: dict[int, Table] = {}
