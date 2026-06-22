@@ -31,6 +31,7 @@ class LobbyManager:
             username = self.clients.get(sid)
             print(f"Client disconnected: {sid}, username: {username}")
             _ = self.clients.pop(sid)
+            tables_to_remove = []
             for table in self.tables.values():
                 player = next((p for p in table.players if p.sid == sid), None)
                 if player:
@@ -40,9 +41,12 @@ class LobbyManager:
                         if table.players:
                             table.host_player = table.players[0]
                         else:
-                            _ = self.tables.pop(table.id)
+                            tables_to_remove.append(table.id)
 
                     await self.emit.player_left(player, table)
+
+            for table_id in tables_to_remove:
+                del self.tables[table_id]
 
         @self.sio.on(ClientEvent.LIST_TABLES.value)
         @auth
