@@ -62,8 +62,8 @@ class LobbyManager:
             try:
                 player = Player(name=username, sid=sid)
                 table.add_player(player)
-                await self.sio.enter_room(sid, table.room)
                 await self.emit.joined_table(player, table)
+                await self.sio.enter_room(sid, table.room)
             except Exception as e:
                 await self.emit.error(sid, f"Error while joining table: {str(e)}")
 
