@@ -87,9 +87,7 @@ class EmitTable:
             "table_cards": self.table_cards,
             "pot": self.pot,
             "players": [player.to_dict() for player in self.players],
-            "current_player_name": self.current_player_name
-            if self.current_player_name
-            else None,
+            "current_player_name": self.current_player_name,
             "small_blind_value": self.small_blind_value,
             "big_blind_value": self.big_blind_value,
             "small_blind_player_name": self.small_blind_player_name,
