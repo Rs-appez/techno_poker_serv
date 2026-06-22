@@ -36,6 +36,10 @@ class Player:
         return self._is_out
 
     @property
+    def is_active(self):
+        return not self._is_folded and not self._is_out
+
+    @property
     def is_all_in(self):
         return self._is_all_in
 

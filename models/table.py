@@ -125,11 +125,11 @@ class Table:
             n = len(self._players)
             for _ in range(n):
                 self._current_player_index = (self._current_player_index + 1) % n
-                if not self._players[self._current_player_index].is_folded:
+                if not self._players[self._current_player_index].is_active:
                     return
 
     def _check_end_game(self) -> bool:
-        active_players = [player for player in self._players if not player.is_folded]
+        active_players = [player for player in self._players if not player.is_active]
         if len(active_players) == 1:
             winner = active_players[0]
             winner.win(self.pot)
