@@ -94,7 +94,7 @@ class Table:
             raise ValueError("At least two players are required to start the game.")
         shuffle(self._players)
         self._has_started = True
-        self._deal_blinds()
+        self._reset_game()
 
     def place_bet(self, player: Player, amount: int) -> None:
         current_max_bet = self.max_current_bet
@@ -119,19 +119,34 @@ class Table:
         return call_amount
 
     def _advance_turn(self) -> None:
-        if not self._check_end_game():
+        if not self._check_end_round():
             n = len(self._players)
             for _ in range(n):
                 self._current_player_index = (self._current_player_index + 1) % n
                 if not self._players[self._current_player_index].is_active:
                     return
 
-    def _check_end_game(self) -> bool:
+    def _check_end_round(self) -> bool:
         active_players = [player for player in self._players if not player.is_active]
         if len(active_players) == 1:
             winner = active_players[0]
             winner.win(self.pot)
             self._reset_game()
+            return True
+        if all(player.is_all_in for player in self._players if player.is_active):
+            self._showdown()
+            return True
+
+        if all(
+            player.current_bet == active_players[0].current_bet
+            for player in active_players
+        ):
+            if len(self._table_cards) == 0:
+                self._deal_table_cards(3)
+            elif len(self._table_cards) < 5:
+                self._deal_table_cards(1)
+            else:
+                self._showdown()
             return True
         return False
 
@@ -140,9 +155,14 @@ class Table:
         self._table_cards = []
         for player in self._players:
             player.reset_for_new_round()
+            self._deal_player_cards(player)
         self._small_blind_index = (self._small_blind_index + 1) % len(self._players)
         self._current_player_index = self._small_blind_index
         self._deal_blinds()
+
+    def _showdown(self) -> None:
+        self._deal_table_cards(5 - len(self._table_cards))
+        pass  # TODO: Implement hand evaluation and determine winner(s)
 
     def _deal_blinds(self) -> None:
         small_blind_bet, big_blind_bet = self._small_blind_value, self._big_blind_value
