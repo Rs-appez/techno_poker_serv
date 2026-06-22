@@ -1,8 +1,11 @@
+from random import shuffle
+
 from models import Card, Deck, Player
 
 
 class Table:
     def __init__(self, host_player: Player, players: list[Player] | None = None):
+        self._host_player = host_player
         self._players = [host_player]
         if players:
             self._players.extend(players)
@@ -17,7 +20,7 @@ class Table:
         self._current_bets: dict[Player, int] = {player: 0 for player in self._players}
 
         self._small_blind_index = 0
-        self._current_player_index = 0
+        self._current_player_index = self._small_blind_index
 
     @property
     def id(self) -> int:
@@ -30,6 +33,10 @@ class Table:
     @property
     def has_started(self) -> bool:
         return self._has_started
+
+    @property
+    def host_player(self) -> Player:
+        return self._host_player
 
     @property
     def players(self) -> tuple[Player, ...]:
@@ -83,6 +90,7 @@ class Table:
             raise ValueError("Game has already started.")
         if len(self._players) < 2:
             raise ValueError("At least two players are required to start the game.")
+        shuffle(self._players)
         self._has_started = True
         self._deal_blinds()
 

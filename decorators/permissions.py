@@ -57,7 +57,7 @@ def is_host(sio):
     def decorator(handler):
         @wraps(handler)
         async def wrapper(sid, data, *args, table, **kwargs):
-            if table.players[0].sid != sid:
+            if table.host.sid != sid:
                 await sio.emit(
                     "error",
                     {"message": "Only the host can perform this action"},
