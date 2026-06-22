@@ -48,9 +48,6 @@ class Player:
     def add_card_to_hand(self, card: Card):
         self._hand.append(card)
 
-    def reset_hand(self):
-        self._hand = []
-
     def bet(self, amount: int):
         if amount > self._chips:
             raise ValueError("Not enough chips to bet that amount.")
@@ -76,6 +73,7 @@ class Player:
         self._is_out = True
 
     def reset_for_new_round(self):
+        self._hand = []
         self._current_bet = 0
         self._is_folded = False
         self._is_all_in = False
