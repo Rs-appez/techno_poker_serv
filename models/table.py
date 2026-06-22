@@ -129,7 +129,7 @@ class Table:
         self._table_cards = []
         self._current_bets = {player: 0 for player in self._players}
         for player in self._players:
-            player.reset_hand()
+            player.reset_for_new_round()
         self._small_blind_index = (self._small_blind_index + 1) % len(self._players)
         self._current_player_index = self._small_blind_index
         self._deal_blinds()
