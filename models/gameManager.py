@@ -35,7 +35,7 @@ class GameManager:
                 table.start_game()
                 await self.emit.game_started(table)
             except ValueError as e:
-                await self.emit.error(table, str(e))
+                await self.emit.error(sid, str(e))
 
         @self.sio.on(ClientEvent.BET.value)
         @auth
@@ -52,7 +52,7 @@ class GameManager:
                 await self.emit.player_action(ClientEvent.BET, table, player, amount)
 
             except ValueError as e:
-                await self.emit.error(table, str(e))
+                await self.emit.error(sid, str(e))
 
         @self.sio.on(ClientEvent.FOLD.value)
         @auth
@@ -63,7 +63,7 @@ class GameManager:
                 table.fold(player)
                 await self.emit.player_action(ClientEvent.FOLD, table, player)
             except ValueError as e:
-                await self.emit.error(table, str(e))
+                await self.emit.error(sid, str(e))
 
         @self.sio.on(ClientEvent.CALL.value)
         @auth
@@ -77,4 +77,4 @@ class GameManager:
                 )
 
             except ValueError as e:
-                await self.emit.error(table, str(e))
+                await self.emit.error(sid, str(e))

@@ -15,9 +15,9 @@ class Emitter:
     def __init__(self, sio: AsyncServer):
         self.sio = sio
 
-    async def error(self, table: Table, error_msg: str):
+    async def error(self, room, error_msg: str):
         error = EmitError(message=error_msg)
-        await self.sio.emit(ServerEvent.ERROR, error.to_dict(), room=table.room)
+        await self.sio.emit(ServerEvent.ERROR, error.to_dict(), room=room)
 
     async def joined_table(self, new_player: Player, table: Table):
         emit_player = EmitPlayer.from_player(new_player)
