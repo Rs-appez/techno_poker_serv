@@ -24,6 +24,10 @@ class Table:
         return id(self)
 
     @property
+    def room(self) -> str:
+        return f"table_{self.id}"
+
+    @property
     def has_started(self) -> bool:
         return self._has_started
 
