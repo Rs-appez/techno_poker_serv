@@ -20,9 +20,6 @@ class EmitPlayer:
     current_bet: int
     is_folded: bool
     is_out: bool
-    is_current_player: bool
-    is_small_blind: bool
-    is_big_blind: bool
 
     def to_dict(self) -> dict[str, str | int | bool | list[dict[str, str]]]:
         return {
@@ -31,22 +28,16 @@ class EmitPlayer:
             "current_bet": self.current_bet,
             "is_folded": self.is_folded,
             "is_out": self.is_out,
-            "is_current_player": self.is_current_player,
-            "is_small_blind": self.is_small_blind,
-            "is_big_blind": self.is_big_blind,
         }
 
     @classmethod
-    def from_player(cls, player: Player, table: Table) -> "EmitPlayer":
+    def from_player(cls, player: Player) -> "EmitPlayer":
         return cls(
             player_name=player.name,
             chips=player.chips,
             current_bet=player.current_bet,
             is_folded=player.is_folded,
             is_out=player.is_out,
-            is_current_player=player == table.current_player,
-            is_small_blind=player == table.small_blind_player,
-            is_big_blind=player == table.big_blind_player,
         )
 
 
@@ -62,17 +53,14 @@ class EmitMyplayer(EmitPlayer):
 
     @classmethod
     @override
-    def from_player(cls, player: Player, table: Table) -> "EmitMyplayer":
-        emit_player = super().from_player(player, table)
+    def from_player(cls, player: Player) -> "EmitMyplayer":
+        emit_player = super().from_player(player)
         return cls(
             player_name=emit_player.player_name,
             chips=emit_player.chips,
             current_bet=emit_player.current_bet,
             is_out=emit_player.is_out,
             is_folded=emit_player.is_folded,
-            is_current_player=emit_player.is_current_player,
-            is_small_blind=emit_player.is_small_blind,
-            is_big_blind=emit_player.is_big_blind,
             hand=[card.to_dict() for card in player.hand],
         )
 
@@ -85,6 +73,10 @@ class EmitTable:
     pot: int
     players: list[EmitPlayer]
     current_player_name: str | None = None
+    small_blind_value: int | None = None
+    big_blind_value: int | None = None
+    small_blind_player_name: str | None = None
+    big_blind_player_name: str | None = None
 
     def to_dict(
         self,
@@ -98,6 +90,10 @@ class EmitTable:
             "current_player_name": self.current_player_name
             if self.current_player_name
             else None,
+            "small_blind_value": self.small_blind_value,
+            "big_blind_value": self.big_blind_value,
+            "small_blind_player_name": self.small_blind_player_name,
+            "big_blind_player_name": self.big_blind_player_name,
         }
 
     @classmethod
@@ -110,6 +106,14 @@ class EmitTable:
             players=[EmitPlayer.from_player(player, table) for player in table.players],
             current_player_name=table.current_player.name
             if table.current_player
+            else None,
+            small_blind_value=table.small_blind_value,
+            big_blind_value=table.big_blind_value,
+            small_blind_player_name=table.small_blind_player.name
+            if table.small_blind_player
+            else None,
+            big_blind_player_name=table.big_blind_player.name
+            if table.big_blind_player
             else None,
         )
 
@@ -137,7 +141,7 @@ class EmitPlayerAction:
         payload = {
             "action": self.action,
             "table": EmitTable.from_table(self.table).to_dict(),
-            "player": EmitPlayer.from_player(self.player, self.table).to_dict(),
+            "player": EmitPlayer.from_player(self.player).to_dict(),
             "amount": self.amount if self.amount is not None else None,
         }
         return payload
