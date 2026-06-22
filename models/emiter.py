@@ -26,9 +26,7 @@ class Emitter:
         await self.sio.emit(
             ServerEvent.JOINED_TABLE, emit_change_table.to_dict(), room=table.room
         )
-        await self.sio.emit(
-            ServerEvent.ADDED_TO_TABLE, emit_table.to_dict(), room=new_player.sid
-        )
+        return emit_table.to_dict()
 
     async def player_left(self, player: Player, table: Table):
         emit_player = EmitPlayer.from_player(player)

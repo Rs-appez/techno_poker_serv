@@ -22,8 +22,6 @@ class ServerEvent(StrEnum):
     ERROR = "error"
 
     JOINED_TABLE = "joined_table"
-    LEFT_TABLE = "left_table"
-    ADDED_TO_TABLE = "added_to_table"
 
     GAME_STARTED = "game_started"
     YOUR_TURN = "your_turn"
