@@ -36,12 +36,13 @@ class LobbyManager:
                 if player:
                     table.remove_player(player)
                     await self.sio.leave_room(sid, table.room)
-                    await self.emit.player_left(player, table)
                     if table.host_player.sid == sid:
                         if table.players:
                             table.host_player = table.players[0]
                         else:
                             _ = self.tables.pop(table.id)
+
+                    await self.emit.player_left(player, table)
 
         @self.sio.on(ClientEvent.LIST_TABLES.value)
         @auth

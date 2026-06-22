@@ -120,11 +120,13 @@ class EmitTable:
 class EmitChangeTable:
     player: EmitPlayer
     entered: bool
+    host_name: str
 
     def to_dict(self):
         return {
             "player_name": self.player.to_dict(),
             "entered": self.entered,
+            "host_name": self.host_name,
         }
 
 
