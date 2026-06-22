@@ -124,7 +124,7 @@ class EmitChangeTable:
 
     def to_dict(self):
         return {
-            "player_name": self.player.to_dict(),
+            "player": self.player.to_dict(),
             "entered": self.entered,
             "host_name": self.host_name,
         }
