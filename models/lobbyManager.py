@@ -2,6 +2,7 @@ from decorators.permissions import require_auth, require_table
 from models import Emitter, GameManager, Table, Player
 import socketio
 
+from models.emitModels import EmitTable
 from models.events import ClientEvent
 
 
@@ -36,11 +37,7 @@ class LobbyManager:
         @auth
         async def list_tables(sid, *, username, **kwargs):
             tables_info = [
-                {
-                    "table_id": table.id,
-                    "num_players": len(table.players),
-                    "host_name": table.players[0].name,
-                }
+                EmitTable.from_table(table).to_dict()
                 for table in self.tables.values()
                 if not table.has_started
             ]
@@ -53,7 +50,7 @@ class LobbyManager:
             new_table = Table(player)
             self.tables[new_table.id] = new_table
             await self.sio.enter_room(sid, f"table_{new_table.id}")
-            return {"table_id": new_table.id, "num_players": 1, "host_name": username}
+            return EmitTable.from_table(new_table).to_dict()
 
         @self.sio.on(ClientEvent.JOIN_TABLE.value)
         @auth
