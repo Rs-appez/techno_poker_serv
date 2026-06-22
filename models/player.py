@@ -1,3 +1,5 @@
+from typing import override
+
 from models import Card
 
 
@@ -44,6 +46,12 @@ class Player:
     @property
     def current_bet(self):
         return self._current_bet
+
+    @override
+    def __eq__(self, other):
+        if not isinstance(other, Player):
+            return False
+        return self._sid == other._sid
 
     def add_card_to_hand(self, card: Card):
         self._hand.append(card)
