@@ -57,6 +57,10 @@ class Player:
             return False
         return self._sid == other._sid
 
+    @override
+    def __hash__(self):
+        return hash(self._sid)
+
     def add_card_to_hand(self, card: Card):
         self._hand.append(card)
 
