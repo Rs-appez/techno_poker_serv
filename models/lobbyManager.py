@@ -27,7 +27,6 @@ class LobbyManager:
             self.clients[sid] = username
 
         @self.sio.event
-        @auth
         async def disconnect(sid):
             username = self.clients.get(sid)
             print(f"Client disconnected: {sid}, username: {username}")

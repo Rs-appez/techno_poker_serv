@@ -98,7 +98,7 @@ class EmitTable:
     def from_table(cls, table: Table) -> "EmitTable":
         return cls(
             table_id=table.id,
-            host_name=table.host.name,
+            host_name=table.host_player.name,
             table_cards=[card.to_dict() for card in table.table_cards],
             pot=table.pot,
             players=[EmitPlayer.from_player(player, table) for player in table.players],
