@@ -14,6 +14,7 @@ class Table:
         self._deck = Deck.create_standard_deck()
         self._has_started = False
 
+        self._orfan_pot = 0
         self._small_blind_value = 10
         self._big_blind_value = 20
 
@@ -54,7 +55,7 @@ class Table:
 
     @property
     def pot(self) -> int:
-        return sum(player.current_bet for player in self._players)
+        return sum(player.current_bet for player in self._players) + self._orfan_pot
 
     @property
     def max_current_bet(self) -> int:
@@ -87,6 +88,13 @@ class Table:
             raise ValueError("A player with that name is already in the game.")
 
         self._players.append(player)
+
+    def remove_player(self, player: Player) -> None:
+        if player not in self._players:
+            raise ValueError("Player is not in the game.")
+        if self._has_started:
+            self._orfan_pot += player.current_bet
+        self._players.remove(player)
 
     def start_game(self) -> None:
         if self._has_started:
@@ -158,6 +166,7 @@ class Table:
     def _reset_game(self) -> None:
         self._deck = Deck.create_standard_deck()
         self._table_cards = []
+        self._orfan_pot = 0
         for player in self._players:
             player.reset_for_new_round()
             self._deal_player_cards(player)
