@@ -30,7 +30,18 @@ class LobbyManager:
         async def disconnect(sid):
             username = self.clients.get(sid)
             print(f"Client disconnected: {sid}, username: {username}")
-            self.clients.pop(sid)
+            _ = self.clients.pop(sid)
+            for table in self.tables.values():
+                player = next((p for p in table.players if p.sid == sid), None)
+                if player:
+                    table.remove_player(player)
+                    await self.sio.leave_room(sid, table.room)
+                    await self.emit.player_left(player, table)
+                    if table.host_player.sid == sid:
+                        if table.players:
+                            table.host_player = table.players[0]
+                        else:
+                            _ = self.tables.pop(table.id)
 
         @self.sio.on(ClientEvent.LIST_TABLES.value)
         @auth
