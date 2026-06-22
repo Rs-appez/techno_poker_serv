@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum
 import random
+from typing import override
 
 
 class Suit(Enum):
@@ -31,8 +32,12 @@ class Card:
     rank: Rank
     suit: Suit
 
+    @override
     def __str__(self):
         return f"{self.rank} of {self.suit}"
+
+    def to_dict(self) -> dict[str, str | int]:
+        return {"rank": self.rank.name.lower(), "suit": self.suit.name.lower()}
 
 
 @dataclass
