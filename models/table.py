@@ -39,6 +39,12 @@ class Table:
     def host_player(self) -> Player:
         return self._host_player
 
+    @host_player.setter
+    def host_player(self, player: Player) -> None:
+        if player not in self._players:
+            raise ValueError("Host player must be one of the players at the table.")
+        self._host_player = player
+
     @property
     def players(self) -> tuple[Player, ...]:
         return tuple(self._players)
