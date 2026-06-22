@@ -20,7 +20,7 @@ class Emitter:
         await self.sio.emit(ServerEvent.ERROR, error.to_dict(), room=table.room)
 
     async def joined_table(self, new_player: Player, table: Table):
-        emit_player = EmitPlayer.from_player(new_player, table)
+        emit_player = EmitPlayer.from_player(new_player)
         emit_change_table = EmitChangeTable(emit_player, True)
         await self.sio.emit(
             ServerEvent.JOINED_TABLE, emit_change_table.to_dict(), room=table.room
