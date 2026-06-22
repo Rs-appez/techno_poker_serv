@@ -67,6 +67,8 @@ class EmitMyplayer(EmitPlayer):
         return cls(
             player_name=emit_player.player_name,
             chips=emit_player.chips,
+            current_bet=emit_player.current_bet,
+            is_out=emit_player.is_out,
             is_folded=emit_player.is_folded,
             is_current_player=emit_player.is_current_player,
             is_small_blind=emit_player.is_small_blind,
