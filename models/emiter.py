@@ -41,7 +41,7 @@ class Emitter:
     ):
 
         emit_player_action = EmitPlayerAction(
-            action=action, table_id=table.id, player=player.name, amount=amount
+            action=action, table=table, player=player, amount=amount
         )
         await self.sio.emit(
             ServerEvent.PLAYER_ACTION, emit_player_action.to_dict(), room=table.room
