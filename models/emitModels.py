@@ -103,7 +103,7 @@ class EmitTable:
             host_name=table.host_player.name,
             table_cards=[card.to_dict() for card in table.table_cards],
             pot=table.pot,
-            players=[EmitPlayer.from_player(player, table) for player in table.players],
+            players=[EmitPlayer.from_player(player) for player in table.players],
             current_player_name=table.current_player.name
             if table.current_player
             else None,
