@@ -17,7 +17,9 @@ class EmitError:
 class EmitPlayer:
     player_name: str
     chips: int
+    current_bet: int
     is_folded: bool
+    is_out: bool
     is_current_player: bool
     is_small_blind: bool
     is_big_blind: bool
@@ -26,7 +28,9 @@ class EmitPlayer:
         return {
             "player_name": self.player_name,
             "chips": self.chips,
+            "current_bet": self.current_bet,
             "is_folded": self.is_folded,
+            "is_out": self.is_out,
             "is_current_player": self.is_current_player,
             "is_small_blind": self.is_small_blind,
             "is_big_blind": self.is_big_blind,
@@ -37,7 +41,9 @@ class EmitPlayer:
         return cls(
             player_name=player.name,
             chips=player.chips,
+            current_bet=player.current_bet,
             is_folded=player.is_folded,
+            is_out=player.is_out,
             is_current_player=player == table.current_player,
             is_small_blind=player == table.small_blind_player,
             is_big_blind=player == table.big_blind_player,
@@ -120,16 +126,15 @@ class EmitChangeTable:
 @dataclass
 class EmitPlayerAction:
     action: ClientEvent
-    table_id: int
-    player: str
+    table: Table
+    player: Player
     amount: int | None = None
 
     def to_dict(self):
         payload = {
             "action": self.action,
-            "table_id": self.table_id,
-            "player": self.player,
+            "table": EmitTable.from_table(self.table).to_dict(),
+            "player": EmitPlayer.from_player(self.player, self.table).to_dict(),
+            "amount": self.amount if self.amount is not None else None,
         }
-        if self.amount is not None:
-            payload["amount"] = self.amount
         return payload
