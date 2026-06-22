@@ -45,17 +45,37 @@ class LobbyManager:
         @self.sio.on(ClientEvent.CREATE_TABLE.value)
         @auth
         async def create_table(sid, *, username, **kwargs):
-            player = Player(name=username, sid=sid)
-            new_table = Table(player)
-            self.tables[new_table.id] = new_table
-            await self.sio.enter_room(sid, f"table_{new_table.id}")
-            return EmitTable.from_table(new_table).to_dict()
+            try:
+                player = Player(name=username, sid=sid)
+                new_table = Table(player)
+                self.tables[new_table.id] = new_table
+                await self.sio.enter_room(sid, new_table.room)
+                return EmitTable.from_table(new_table).to_dict()
+            except Exception as e:
+                await self.emit.error(sid, f"Error while creating table: {str(e)}")
+                return {"error": str(e)}
 
         @self.sio.on(ClientEvent.JOIN_TABLE.value)
         @auth
         @table
         async def join_table(sid, data, *, username, table, **kwargs):
-            player = Player(name=username, sid=sid)
-            table.add_player(player)
-            await self.sio.enter_room(sid, f"table_{table.id}")
-            await self.emit.joined_table(player, table)
+            try:
+                player = Player(name=username, sid=sid)
+                table.add_player(player)
+                await self.sio.enter_room(sid, table.room)
+                await self.emit.joined_table(player, table)
+            except Exception as e:
+                await self.emit.error(sid, f"Error while joining table: {str(e)}")
+
+        @self.sio.on(ClientEvent.QUIT_TABLE.value)
+        @auth
+        @table
+        async def quit_table(sid, *, username, table: Table, **kwargs):
+            try:
+                player = next((p for p in table.players if p.sid == sid), None)
+                if player:
+                    table.remove_player(player)
+                    await self.sio.leave_room(sid, table.room)
+                    await self.emit.player_left(player, table)
+            except Exception as e:
+                await self.emit.error(sid, f"Error while quitting table: {str(e)}")

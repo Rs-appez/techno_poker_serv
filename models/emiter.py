@@ -26,6 +26,13 @@ class Emitter:
             ServerEvent.JOINED_TABLE, emit_change_table.to_dict(), room=table.room
         )
 
+    async def player_left(self, player: Player, table: Table):
+        emit_player = EmitPlayer.from_player(player)
+        emit_change_table = EmitChangeTable(emit_player, False)
+        await self.sio.emit(
+            ServerEvent.JOINED_TABLE, emit_change_table.to_dict(), room=table.room
+        )
+
     async def game_started(self, table: Table):
         emit_table = EmitTable.from_table(table)
         await self.sio.emit(
