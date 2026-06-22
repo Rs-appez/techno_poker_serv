@@ -68,8 +68,13 @@ class Table:
     def add_player(self, player: Player) -> None:
         if self._has_started:
             raise ValueError("Cannot join a game that has already started.")
+        if len(self._players) >= 12:
+            raise ValueError("Table is full. Maximum 12 players allowed.")
         if player in self._players:
             raise ValueError("Player is already in the game.")
+        if player.name in [p.name for p in self._players]:
+            raise ValueError("A player with that name is already in the game.")
+
         self._players.append(player)
         self._current_bets[player] = 0
 
