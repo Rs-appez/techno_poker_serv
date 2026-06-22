@@ -7,7 +7,11 @@ class Player:
         self._sid = sid
         self._hand: list[Card] = []
         self._chips = 1000
+        self._current_bet = 0
+
+        self._is_all_in = False
         self._is_folded = False
+        self._is_out = False
 
     @property
     def name(self):
@@ -26,8 +30,20 @@ class Player:
         return self._is_folded
 
     @property
+    def is_out(self):
+        return self._is_out
+
+    @property
+    def is_all_in(self):
+        return self._is_all_in
+
+    @property
     def chips(self):
         return self._chips
+
+    @property
+    def current_bet(self):
+        return self._current_bet
 
     def add_card_to_hand(self, card: Card):
         self._hand.append(card)
@@ -41,9 +57,25 @@ class Player:
         elif amount <= 0:
             raise ValueError("Bet amount must be greater than zero.")
         self._chips -= amount
+        self._current_bet += amount
+
+        if self._chips == 0:
+            self._is_all_in = True
 
     def win(self, amount: int):
         self._chips += amount
 
     def fold(self):
         self._hand = []
+        self._is_folded = True
+
+    def out(self):
+        if self._chips > 0:
+            raise ValueError("Player still has chips and cannot be out.")
+        self._hand = []
+        self._is_out = True
+
+    def reset_for_new_round(self):
+        self._current_bet = 0
+        self._is_folded = False
+        self._is_all_in = False
