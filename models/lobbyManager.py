@@ -63,7 +63,7 @@ class LobbyManager:
         async def create_table(sid, *, username, **kwargs):
             try:
                 player = Player(name=username, sid=sid)
-                new_table = Table(player)
+                new_table = Table(player, emitter=self.emit)
                 self.tables[new_table.id] = new_table
                 await self.sio.enter_room(sid, new_table.room)
                 return EmitTable.from_table(new_table).to_dict()
