@@ -42,25 +42,15 @@ class EmitPlayer:
 
 
 @dataclass
-class EmitMyplayer(EmitPlayer):
+class EmitHand:
     hand: list[dict[str, str]]
 
-    @override
     def to_dict(self):
-        base_dict = super().to_dict()
-        base_dict["hand"] = self.hand
-        return base_dict
+        return {"hand": self.hand}
 
     @classmethod
-    @override
-    def from_player(cls, player: Player) -> "EmitMyplayer":
-        emit_player = super().from_player(player)
+    def from_player(cls, player: Player) -> "EmitHand":
         return cls(
-            player_name=emit_player.player_name,
-            chips=emit_player.chips,
-            current_bet=emit_player.current_bet,
-            is_out=emit_player.is_out,
-            is_folded=emit_player.is_folded,
             hand=[card.to_dict() for card in player.hand],
         )
 
