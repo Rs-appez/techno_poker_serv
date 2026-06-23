@@ -1,0 +1,14 @@
+.env*
+.venv
+__pycache__
+.git
+.github
+.gitignore
+.dockerignore
+Dockerfile*
+compose.yml
+README.md
+.python-version
+fly.toml
+
+requirements.txt

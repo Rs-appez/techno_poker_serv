@@ -1,0 +1,6 @@
+services:
+  technopoker-backend:
+    build: .
+    ports:
+      - "4587:4587"
+    restart: unless-stopped
