@@ -43,7 +43,7 @@ class LobbyManager:
                         else:
                             tables_to_remove.append(table.id)
 
-                    await self.emit.player_left(player, table)
+                    _ = await self.emit.joined_table(player, table, is_joining=False)
 
             for table_id in tables_to_remove:
                 del self.tables[table_id]
@@ -92,6 +92,6 @@ class LobbyManager:
                 if player:
                     table.remove_player(player)
                     await self.sio.leave_room(sid, table.room)
-                    await self.emit.player_left(player, table)
+                    _ = await self.emit.joined_table(player, table, is_joining=False)
             except Exception as e:
                 await self.emit.error(sid, f"Error while quitting table: {str(e)}")

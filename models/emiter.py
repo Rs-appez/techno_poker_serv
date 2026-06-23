@@ -19,21 +19,18 @@ class Emitter:
         error = EmitError(message=error_msg)
         await self.sio.emit(ServerEvent.ERROR, error.to_dict(), room=room)
 
-    async def joined_table(self, new_player: Player, table: Table):
+    async def joined_table(
+        self, new_player: Player, table: Table, is_joining: bool = True
+    ):
         emit_player = EmitPlayer.from_player(new_player)
         emit_table = EmitTable.from_table(table)
-        emit_change_table = EmitChangeTable(emit_player, True, table.host_player.name)
+        emit_change_table = EmitChangeTable(
+            emit_player, is_joining, table.host_player.name
+        )
         await self.sio.emit(
             ServerEvent.JOINED_TABLE, emit_change_table.to_dict(), room=table.room
         )
         return emit_table.to_dict()
-
-    async def player_left(self, player: Player, table: Table):
-        emit_player = EmitPlayer.from_player(player)
-        emit_change_table = EmitChangeTable(emit_player, False, table.host_player.name)
-        await self.sio.emit(
-            ServerEvent.JOINED_TABLE, emit_change_table.to_dict(), room=table.room
-        )
 
     async def game_started(self, table: Table):
         emit_table = EmitTable.from_table(table)
