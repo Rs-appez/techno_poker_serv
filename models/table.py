@@ -1,8 +1,12 @@
 import asyncio
 from random import shuffle
+from typing import TYPE_CHECKING
 
-from models import Card, Deck, Emitter, Player
+from models import Card, Deck, Player
 from utils.handRanking import find_winner
+
+if TYPE_CHECKING:
+    from models import Emitter
 
 
 class Table:
