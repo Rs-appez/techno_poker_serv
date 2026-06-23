@@ -20,10 +20,12 @@ class EmitPlayer:
     current_bet: int
     is_folded: bool
     is_out: bool
+    hand: EmitHand | None = None
 
     def to_dict(self) -> dict[str, str | int | bool | list[dict[str, str]]]:
         return {
             "player_name": self.player_name,
+            "hand": self.hand.to_dict()["hand"] if self.hand else [],
             "chips": self.chips,
             "current_bet": self.current_bet,
             "is_folded": self.is_folded,
@@ -31,13 +33,14 @@ class EmitPlayer:
         }
 
     @classmethod
-    def from_player(cls, player: Player) -> "EmitPlayer":
+    def from_player(cls, player: Player, hide_hand: bool = True) -> "EmitPlayer":
         return cls(
             player_name=player.name,
             chips=player.chips,
             current_bet=player.current_bet,
             is_folded=player.is_folded,
             is_out=player.is_out,
+            hand=EmitHand.from_player(player) if not hide_hand else None,
         )
 
 
