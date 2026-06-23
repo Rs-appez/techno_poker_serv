@@ -4,6 +4,7 @@ from models.events import ClientEvent, ServerEvent
 from models.emitModels import (
     EmitError,
     EmitChangeTable,
+    EmitHand,
     EmitPlayer,
     EmitPlayerAction,
     EmitTable,
@@ -53,4 +54,10 @@ class Emitter:
         )
         await self.sio.emit(
             ServerEvent.PLAYER_ACTION, emit_player_action.to_dict(), room=table.room
+        )
+
+    async def hand_dealt(self, player: Player):
+        emit_hand = EmitHand.from_player(player)
+        await self.sio.emit(
+            ServerEvent.CARDS_DEALT, emit_hand.to_dict(), room=player.sid
         )
