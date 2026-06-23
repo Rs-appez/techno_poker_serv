@@ -91,6 +91,11 @@ class LobbyManager:
                 player = next((p for p in table.players if p.sid == sid), None)
                 if player:
                     table.remove_player(player)
+                    if table.host_player.sid == sid:
+                        if table.players:
+                            table.host_player = table.players[0]
+                        else:
+                            del self.tables[table.id]
                     await self.sio.leave_room(sid, table.room)
                     _ = await self.emit.joined_table(player, table, is_joining=False)
             except Exception as e:
