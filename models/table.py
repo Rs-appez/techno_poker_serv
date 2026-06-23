@@ -88,11 +88,15 @@ class Table:
         return self._big_blind_value
 
     @property
-    def small_blind_player(self) -> Player:
+    def small_blind_player(self) -> Player | None:
+        if not self._players:
+            return None
         return self._players[self._small_blind_index]
 
     @property
-    def big_blind_player(self) -> Player:
+    def big_blind_player(self) -> Player | None:
+        if not self._players:
+            return None
         return self._players[(self._small_blind_index - 1) % len(self._players)]
 
     def add_player(self, player: Player) -> None:
@@ -204,8 +208,15 @@ class Table:
     def _deal_blinds(self) -> None:
         small_blind_bet, big_blind_bet = self._small_blind_value, self._big_blind_value
 
-        self.small_blind_player.bet(small_blind_bet)
-        self.big_blind_player.bet(big_blind_bet)
+        if sbp := self.small_blind_player:
+            sbp.bet(small_blind_bet)
+        else:
+            raise ValueError("Small blind player not found.")
+
+        if bbp := self.big_blind_player:
+            bbp.bet(big_blind_bet)
+        else:
+            raise ValueError("Big blind player not found.")
 
     def _deal_table_cards(self, number: int) -> None:
         for _ in range(number):
