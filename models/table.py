@@ -1,11 +1,19 @@
+import asyncio
 from random import shuffle
 
-from models import Card, Deck, Player
+from models import Card, Deck, Emitter, Player
 from utils.handRanking import find_winner
 
 
 class Table:
-    def __init__(self, host_player: Player, players: list[Player] | None = None):
+    def __init__(
+        self,
+        host_player: Player,
+        players: list[Player] | None = None,
+        emitter: Emitter | None = None,
+    ):
+        self._emitter = emitter
+
         self._host_player = host_player
         self._players = [host_player]
         if players:
@@ -202,3 +210,5 @@ class Table:
     def _deal_player_cards(self, player: Player) -> None:
         player.add_card_to_hand(self._deck.draw())
         player.add_card_to_hand(self._deck.draw())
+        if self._emitter:
+            _ = asyncio.create_task(self._emitter.hand_dealt(player))
