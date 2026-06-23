@@ -86,7 +86,7 @@ class LobbyManager:
         @self.sio.on(ClientEvent.QUIT_TABLE.value)
         @auth
         @table
-        async def quit_table(sid, *, username, table: Table, **kwargs):
+        async def quit_table(sid, data, *, username, table: Table, **kwargs):
             try:
                 player = next((p for p in table.players if p.sid == sid), None)
                 if player:
