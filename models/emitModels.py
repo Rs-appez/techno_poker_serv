@@ -65,9 +65,9 @@ class EmitTable:
     table_cards: list[dict[str, str]]
     pot: int
     players: list[EmitPlayer]
+    small_blind_value: int
+    big_blind_value: int
     current_player_name: str | None = None
-    small_blind_value: int | None = None
-    big_blind_value: int | None = None
     small_blind_player_name: str | None = None
     big_blind_player_name: str | None = None
 
