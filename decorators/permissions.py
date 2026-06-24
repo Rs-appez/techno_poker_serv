@@ -9,11 +9,11 @@ def require_auth(sio: AsyncServer, clients: dict[str, dict[str, str]]):
     def decorator(handler):
         @wraps(handler)
         async def wrapper(sid, *args, **kwargs):
-            username = clients.get(sid, None)
-            if not username:
+            client = clients.get(sid, None)
+            if not client:
                 await sio.emit("error", {"message": "Unauthorized"}, room=sid)
                 return
-            return await handler(sid, *args, username=username, **kwargs)
+            return await handler(sid, *args, username=client.get("username"), **kwargs)
 
         return wrapper
 
