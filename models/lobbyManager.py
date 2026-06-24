@@ -50,7 +50,7 @@ class LobbyManager:
 
         @self.sio.on(ClientEvent.LIST_TABLES.value)
         @auth
-        async def list_tables(sid, *, username, **kwargs):
+        async def list_tables(sid, *args, **kwargs):
             tables_info = [
                 EmitTable.from_table(table).to_dict()
                 for table in self.tables.values()
@@ -74,7 +74,7 @@ class LobbyManager:
         @self.sio.on(ClientEvent.JOIN_TABLE.value)
         @auth
         @table
-        async def join_table(sid, data, *, username, table, **kwargs):
+        async def join_table(sid, _, *, username, table, **kwargs):
             try:
                 player = Player(name=username, sid=sid)
                 table.add_player(player)
@@ -86,7 +86,7 @@ class LobbyManager:
         @self.sio.on(ClientEvent.QUIT_TABLE.value)
         @auth
         @table
-        async def quit_table(sid, data, *, username, table: Table, **kwargs):
+        async def quit_table(sid, _, *, table: Table, **kwargs):
             try:
                 player = next((p for p in table.players if p.sid == sid), None)
                 if player:
