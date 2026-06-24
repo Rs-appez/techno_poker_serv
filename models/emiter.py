@@ -15,7 +15,7 @@ class Emitter:
     def __init__(self, sio: AsyncServer):
         self.sio = sio
 
-    async def error(self, room, error_msg: str):
+    async def error(self, room: str, error_msg: str):
         error = EmitError(message=error_msg)
         await self.sio.emit(ServerEvent.ERROR, error.to_dict(), room=room)
 
