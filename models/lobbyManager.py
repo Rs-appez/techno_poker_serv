@@ -13,6 +13,7 @@ class LobbyManager:
         self.sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins="*")
         self.app = socketio.ASGIApp(self.sio, socketio_path="socket.io/")
         self.clients: dict[str, dict[str, str]] = {}
+        self.players: set[Player] = set()
         self.tables: dict[int, Table] = {}
         self.emit = Emitter(self.sio)
         self._register_events()
@@ -31,13 +32,7 @@ class LobbyManager:
                     (s for s, u in self.clients.items() if u.get("token") == token),
                     None,
                 ):
-                    del self.clients[old_sid]
-                    for table in self.tables.values():
-                        player = next(
-                            (p for p in table.players if p.sid == old_sid), None
-                        )
-                        if player:
-                            player.sid = sid
+                    self._change_player_sid(old_sid, sid)
             else:
                 token = uuid.uuid4().hex
                 asyncio.create_task(self.emit.auth_token(sid, token))
@@ -96,6 +91,7 @@ class LobbyManager:
         async def join_table(sid, _, *, username: str, table: Table, **kwargs):
             try:
                 player = Player(name=username, sid=sid)
+                self.players.add(player)
                 table.add_player(player)
                 await self.sio.enter_room(sid, table.room)
                 return await self.emit.joined_table(player, table)
@@ -116,6 +112,12 @@ class LobbyManager:
                         else:
                             del self.tables[table.id]
                     await self.sio.leave_room(sid, table.room)
+                    self.players.discard(player)
                     _ = await self.emit.joined_table(player, table, is_joining=False)
             except Exception as e:
                 await self.emit.error(sid, f"Error while quitting table: {str(e)}")
+
+    def _change_player_sid(self, old_sid: str, new_sid: str):
+        del self.clients[old_sid]
+        for player in [p for p in self.players if p.sid == old_sid]:
+            player.sid = new_sid
