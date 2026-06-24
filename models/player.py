@@ -23,6 +23,10 @@ class Player:
     def sid(self) -> str:
         return self._sid
 
+    @sid.setter
+    def sid(self, new_sid: str):
+        self._sid = new_sid
+
     @property
     def hand(self) -> list[Card]:
         return self._hand
