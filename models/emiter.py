@@ -8,6 +8,7 @@ from models.emitModels import (
     EmitPlayer,
     EmitPlayerAction,
     EmitTable,
+    EmitAuthToken,
 )
 
 
@@ -18,6 +19,10 @@ class Emitter:
     async def error(self, room: str, error_msg: str):
         error = EmitError(message=error_msg)
         await self.sio.emit(ServerEvent.ERROR, error.to_dict(), room=room)
+
+    async def auth_token(self, sid: str, token: str):
+        auth_token = EmitAuthToken(token=token)
+        await self.sio.emit(ServerEvent.AUTH_TOKEN, auth_token.to_dict(), room=sid)
 
     async def joined_table(
         self, new_player: Player, table: Table, is_joining: bool = True

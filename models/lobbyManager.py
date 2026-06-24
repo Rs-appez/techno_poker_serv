@@ -1,3 +1,4 @@
+import asyncio
 import uuid
 from decorators.permissions import require_auth, require_table
 from models import Emitter, GameManager, Table, Player
@@ -39,10 +40,10 @@ class LobbyManager:
                             player.sid = sid
             else:
                 token = uuid.uuid4().hex
+                asyncio.create_task(self.emit.auth_token(sid, token))
 
             print(f"Client connected: {sid}, username: {username}")
             self.clients[sid] = {"username": username, "token": token}
-            return {"token": token}
 
         @self.sio.event
         async def disconnect(sid, *args, **kwargs):

@@ -20,6 +20,7 @@ class ServerEvent(StrEnum):
     """Events emitted TO clients."""
 
     ERROR = "error"
+    AUTH_TOKEN = "auth_token"
 
     JOINED_TABLE = "joined_table"
 

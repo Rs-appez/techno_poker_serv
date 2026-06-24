@@ -14,6 +14,14 @@ class EmitError:
 
 
 @dataclass
+class EmitAuthToken:
+    token: str
+
+    def to_dict(self):
+        return {"token": self.token}
+
+
+@dataclass
 class EmitPlayer:
     player_name: str
     chips: int
