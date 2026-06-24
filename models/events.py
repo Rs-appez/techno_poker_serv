@@ -11,7 +11,7 @@ class ClientEvent(StrEnum):
 
     START_GAME = "start_game"
 
-    BET = "bet"
+    RAISE = "raise"
     FOLD = "fold"
     CALL = "call"
 

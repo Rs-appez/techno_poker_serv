@@ -37,7 +37,7 @@ class GameManager:
             except ValueError as e:
                 await self.emit.error(sid, str(e))
 
-        @self.sio.on(ClientEvent.BET.value)
+        @self.sio.on(ClientEvent.RAISE.value)
         @auth
         @table
         @current_player
@@ -49,7 +49,7 @@ class GameManager:
 
             try:
                 table.place_bet(player, amount)
-                await self.emit.player_action(ClientEvent.BET, table, player, amount)
+                await self.emit.player_action(ClientEvent.RAISE, table, player, amount)
 
             except ValueError as e:
                 await self.emit.error(sid, str(e))
