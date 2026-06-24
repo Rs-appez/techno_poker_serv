@@ -62,7 +62,7 @@ class EmitHand:
 class EmitTable:
     table_id: int
     host_name: str
-    table_cards: list[dict[str, str]]
+    table_cards: list[dict[str, str | int]]
     pot: int
     players: list[EmitPlayer]
     small_blind_value: int
