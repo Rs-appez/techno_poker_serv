@@ -72,6 +72,7 @@ class LobbyManager:
         @auth
         @table
         async def join_table(sid, _, *, username: str, table: Table, **kwargs):
+            # Check if the player is already in the table (reconnection scenario)
             player = next((p for p in table.players if p.sid == sid), None)
             if player:
                 return await self.emit.joined_table(player, table)

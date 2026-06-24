@@ -35,6 +35,12 @@ class Emitter:
         await self.sio.emit(
             ServerEvent.JOINED_TABLE, emit_change_table.to_dict(), room=table.room
         )
+
+        emit_new_player = EmitPlayer.from_player(new_player, hide_hand=False)
+        emit_table.players = [
+            p if p.player_name != new_player.name else emit_new_player
+            for p in emit_table.players
+        ]
         return emit_table.to_dict()
 
     async def game_started(self, table: Table):
