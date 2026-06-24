@@ -1,5 +1,10 @@
 from functools import wraps
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from models import Table
+
 
 def require_auth(sio, clients):
     def decorator(handler):
@@ -56,8 +61,8 @@ def in_table(sio, tables):
 def is_host(sio):
     def decorator(handler):
         @wraps(handler)
-        async def wrapper(sid, data, *args, table, **kwargs):
-            if table.host.sid != sid:
+        async def wrapper(sid, data, *args, table: Table, **kwargs):
+            if table.host_player.sid != sid:
                 await sio.emit(
                     "error",
                     {"message": "Only the host can perform this action"},
