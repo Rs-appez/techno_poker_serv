@@ -63,7 +63,7 @@ class Player:
 
     @override
     def __hash__(self) -> int:
-        return hash(self._sid)
+        return hash(self._sid + self._name)
 
     def add_card_to_hand(self, card: Card):
         self._hand.append(card)
