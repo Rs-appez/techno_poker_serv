@@ -20,7 +20,7 @@ def require_auth(sio: AsyncServer, clients: dict[str, str]):
     return decorator
 
 
-def require_table(sio: AsyncServer, tables: dict[str, Table]):
+def require_table(sio: AsyncServer, tables: dict[int, Table]):
     def decorator(handler):
         @wraps(handler)
         async def wrapper(sid, data, *args, **kwargs):
