@@ -4,7 +4,7 @@ from models import Card
 
 
 class Player:
-    def __init__(self, name, sid):
+    def __init__(self, name: str, sid: str):
         self._name = name
         self._sid = sid
         self._hand: list[Card] = []
@@ -16,49 +16,49 @@ class Player:
         self._is_out = False
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self._name
 
     @property
-    def sid(self):
+    def sid(self) -> str:
         return self._sid
 
     @property
-    def hand(self):
+    def hand(self) -> list[Card]:
         return self._hand
 
     @property
-    def is_folded(self):
+    def is_folded(self) -> bool:
         return self._is_folded
 
     @property
-    def is_out(self):
+    def is_out(self) -> bool:
         return self._is_out
 
     @property
-    def is_active(self):
+    def is_active(self) -> bool:
         return not self._is_folded and not self._is_out
 
     @property
-    def is_all_in(self):
+    def is_all_in(self) -> bool:
         return self._is_all_in
 
     @property
-    def chips(self):
+    def chips(self) -> int:
         return self._chips
 
     @property
-    def current_bet(self):
+    def current_bet(self) -> int:
         return self._current_bet
 
     @override
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if not isinstance(other, Player):
             return False
         return self._sid == other._sid
 
     @override
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(self._sid)
 
     def add_card_to_hand(self, card: Card):
