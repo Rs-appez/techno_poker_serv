@@ -74,7 +74,7 @@ class LobbyManager:
         @self.sio.on(ClientEvent.JOIN_TABLE.value)
         @auth
         @table
-        async def join_table(sid, _, *, username, table, **kwargs):
+        async def join_table(sid, _, *, username: str, table: Table, **kwargs):
             try:
                 player = Player(name=username, sid=sid)
                 table.add_player(player)
