@@ -105,11 +105,11 @@ class LobbyManager:
             if table.host_player.sid == sid:
                 if table.players:
                     table.host_player = table.players[0]
+                    _ = await self.emit.joined_table(player, table, is_joining=False)
                 else:
                     del self.tables[table.id]
             await self.sio.leave_room(sid, table.room)
             self.players.discard(player)
-            _ = await self.emit.joined_table(player, table, is_joining=False)
 
     async def _remove_player_from_all_tables(self, sid: str):
         _ = self.clients.pop(sid)
