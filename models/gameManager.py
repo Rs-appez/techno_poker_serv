@@ -44,7 +44,7 @@ class GameManager:
         async def bet(sid, data, *, player: Player, table: Table, **kwargs):
             amount = data.get("amount")
             if amount is None:
-                await self.emit.error(table, "Bet amount is required.")
+                await self.emit.error(sid, "Bet amount is required.")
                 return
 
             try:
