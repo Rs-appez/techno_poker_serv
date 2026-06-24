@@ -5,11 +5,11 @@ from socketio import AsyncServer
 from models import Table
 
 
-def require_auth(sio: AsyncServer, clients: dict[str, str]):
+def require_auth(sio: AsyncServer, clients: dict[str, dict[str, str]]):
     def decorator(handler):
         @wraps(handler)
         async def wrapper(sid, *args, **kwargs):
-            username = clients.get(sid)
+            username = clients.get(sid, None)
             if not username:
                 await sio.emit("error", {"message": "Unauthorized"}, room=sid)
                 return

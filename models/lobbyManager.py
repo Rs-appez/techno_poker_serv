@@ -1,3 +1,4 @@
+import uuid
 from decorators.permissions import require_auth, require_table
 from models import Emitter, GameManager, Table, Player
 import socketio
@@ -10,7 +11,7 @@ class LobbyManager:
     def __init__(self):
         self.sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins="*")
         self.app = socketio.ASGIApp(self.sio, socketio_path="socket.io/")
-        self.clients: dict[str, str] = {}
+        self.clients: dict[str, dict[str, str]] = {}
         self.tables: dict[int, Table] = {}
         self.emit = Emitter(self.sio)
         self._register_events()
@@ -23,8 +24,25 @@ class LobbyManager:
         @self.sio.event
         async def connect(sid, environ, auth_data):
             username = auth_data.get("username")
+            token = auth_data.get("token")
+            if token:
+                if old_sid := next(
+                    (s for s, u in self.clients.items() if u.get("token") == token),
+                    None,
+                ):
+                    del self.clients[old_sid]
+                    for table in self.tables.values():
+                        player = next(
+                            (p for p in table.players if p.sid == old_sid), None
+                        )
+                        if player:
+                            player.sid = sid
+            else:
+                token = uuid.uuid4().hex
+
             print(f"Client connected: {sid}, username: {username}")
-            self.clients[sid] = username
+            self.clients[sid] = {"username": username, "token": token}
+            return {"token": token}
 
         @self.sio.event
         async def disconnect(sid, *args, **kwargs):

@@ -11,7 +11,7 @@ class GameManager:
         self,
         sio: AsyncServer,
         emitter: Emitter,
-        clients: dict[str, str],
+        clients: dict[str, dict[str, str]],
         tables: dict[int, Table],
     ):
         self.sio = sio
