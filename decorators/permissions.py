@@ -1,12 +1,11 @@
 from functools import wraps
 
-from typing import TYPE_CHECKING
+from socketio import AsyncServer
 
-if TYPE_CHECKING:
-    from models import Table
+from models import Table
 
 
-def require_auth(sio, clients):
+def require_auth(sio: AsyncServer, clients: dict[str, str]):
     def decorator(handler):
         @wraps(handler)
         async def wrapper(sid, *args, **kwargs):
@@ -21,7 +20,7 @@ def require_auth(sio, clients):
     return decorator
 
 
-def require_table(sio, tables):
+def require_table(sio: AsyncServer, tables: dict[str, Table]):
     def decorator(handler):
         @wraps(handler)
         async def wrapper(sid, data, *args, **kwargs):
@@ -37,7 +36,7 @@ def require_table(sio, tables):
     return decorator
 
 
-def in_table(sio, tables):
+def in_table(sio: AsyncServer, tables: dict[int, Table]):
     def decorator(handler):
         @wraps(handler)
         async def wrapper(sid, data, *args, **kwargs):
@@ -58,7 +57,7 @@ def in_table(sio, tables):
     return decorator
 
 
-def is_host(sio):
+def is_host(sio: AsyncServer):
     def decorator(handler):
         @wraps(handler)
         async def wrapper(sid, data, *args, table: Table, **kwargs):
@@ -76,10 +75,10 @@ def is_host(sio):
     return decorator
 
 
-def is_current_player(sio):
+def is_current_player(sio: AsyncServer):
     def decorator(handler):
         @wraps(handler)
-        async def wrapper(sid, data, *args, table, **kwargs):
+        async def wrapper(sid, data, *args, table: Table, **kwargs):
             current_player = table.current_player
             if not current_player or current_player.sid != sid:
                 await sio.emit(
