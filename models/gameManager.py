@@ -30,7 +30,7 @@ class GameManager:
         @auth
         @table
         @host
-        async def start_game(sid, data, *, username, table, **kwargs):
+        async def start_game(sid, data, *, username, table: Table, **kwargs):
             try:
                 table.start_game()
                 await self.emit.game_started(table)
