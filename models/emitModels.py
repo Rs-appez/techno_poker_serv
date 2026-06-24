@@ -46,7 +46,7 @@ class EmitPlayer:
 
 @dataclass
 class EmitHand:
-    hand: list[dict[str, str]]
+    hand: list[dict[str, str | int]]
 
     def to_dict(self):
         return {"hand": self.hand}

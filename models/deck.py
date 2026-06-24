@@ -36,8 +36,8 @@ class Card:
     def __str__(self):
         return f"{self.rank} of {self.suit}"
 
-    def to_dict(self) -> dict[str, str]:
-        return {"rank": self.rank.name.lower(), "suit": self.suit.name.lower()}
+    def to_dict(self) -> dict[str, str | int]:
+        return {"rank": self.rank.value, "suit": self.suit.name.lower()}
 
 
 @dataclass
