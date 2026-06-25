@@ -14,6 +14,7 @@ class Player:
         self._is_all_in = False
         self._is_folded = False
         self._is_out = False
+        self._has_acted = False
 
     @property
     def name(self) -> str:
@@ -48,6 +49,10 @@ class Player:
         return self._is_all_in
 
     @property
+    def has_acted(self) -> bool:
+        return self._has_acted
+
+    @property
     def chips(self) -> int:
         return self._chips
 
@@ -68,22 +73,25 @@ class Player:
     def add_card_to_hand(self, card: Card):
         self._hand.append(card)
 
+    def win(self, amount: int):
+        self._chips += amount
+
     def bet(self, amount: int):
         if amount > self._chips:
             raise ValueError("Not enough chips to bet that amount.")
         elif amount <= 0:
             raise ValueError("Bet amount must be greater than zero.")
+
+        self._has_acted = True
         self._chips -= amount
         self._current_bet += amount
 
         if self._chips == 0:
             self._is_all_in = True
 
-    def win(self, amount: int):
-        self._chips += amount
-
     def fold(self):
         self._hand = []
+        self._has_acted = True
         self._is_folded = True
 
     def out(self):
@@ -95,5 +103,6 @@ class Player:
     def reset_for_new_round(self):
         self._hand = []
         self._current_bet = 0
+        self._has_acted = False
         self._is_folded = False
         self._is_all_in = False
