@@ -29,7 +29,6 @@ class ServerEvent(StrEnum):
 
     PLAYER_ACTION = "player_action"
 
-    CARDS_DEALT = "cards_dealt"
     NEXT_ROUND = "next_round"
 
     END_GAME = "end_game"
