@@ -154,7 +154,7 @@ class Table:
             n = len(self._players)
             for _ in range(n):
                 self._current_player_index = (self._current_player_index + 1) % n
-                if not self._players[self._current_player_index].is_active:
+                if self._players[self._current_player_index].is_active:
                     return
         else:
             for player in self._players:
