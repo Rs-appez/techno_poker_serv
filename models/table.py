@@ -162,7 +162,8 @@ class Table:
                     player.out()
 
     def _check_end_round(self) -> bool:
-        active_players = [player for player in self._players if not player.is_active]
+        active_players = [player for player in self._players if player.is_active]
+
         if len(active_players) == 1:
             winner = active_players[0]
             winner.win(self.pot)
