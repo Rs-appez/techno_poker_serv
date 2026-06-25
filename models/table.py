@@ -167,8 +167,11 @@ class Table:
                     return
         else:
             for player in self._players:
+                player.has_acted = False
                 if player.chips == 0:
                     player.out()
+
+            self._reset_current_player_index()
 
     def _check_end_round(self) -> bool:
         active_players = [player for player in self._players if player.is_active]
@@ -192,7 +195,9 @@ class Table:
                 self._deal_table_cards(1)
             else:
                 self._showdown()
+
             return True
+
         return False
 
     def _reset_game(self) -> None:
@@ -203,8 +208,11 @@ class Table:
             player.reset_for_new_round()
             self._deal_player_cards(player)
         self._small_blind_index = (self._small_blind_index + 1) % len(self._players)
-        self._current_player_index = self._small_blind_index
+        self._reset_current_player_index()
         self._deal_blinds()
+
+    def _reset_current_player_index(self) -> None:
+        self._current_player_index = self._small_blind_index
 
     def _showdown(self) -> None:
         self._deal_table_cards(5 - len(self._table_cards))
