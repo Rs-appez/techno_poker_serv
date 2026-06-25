@@ -223,6 +223,8 @@ class Table:
         for winner in winners:
             winner.win(pot_share)
 
+        self._reset_game()
+
     def _deal_blinds(self) -> None:
         small_blind_bet, big_blind_bet = self._small_blind_value, self._big_blind_value
 
