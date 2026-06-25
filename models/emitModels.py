@@ -41,14 +41,14 @@ class EmitPlayer:
         }
 
     @classmethod
-    def from_player(cls, player: Player, hide_hand: bool = True) -> "EmitPlayer":
+    def from_player(cls, player: Player, show_hand: bool = True) -> "EmitPlayer":
         return cls(
             player_name=player.name,
             chips=player.chips,
             current_bet=player.current_bet,
             is_folded=player.is_folded,
             is_out=player.is_out,
-            hand=EmitHand.from_player(player) if not hide_hand else None,
+            hand=EmitHand.from_player(player) if show_hand else None,
         )
 
 
