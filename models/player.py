@@ -61,6 +61,10 @@ class Player:
         return self._current_bet
 
     @override
+    def __str__(self) -> str:
+        return f"Player(name={self._name}, sid={self._sid}, chips={self._chips}, current_bet={self._current_bet}, is_folded={self._is_folded}, is_out={self._is_out}, is_all_in={self._is_all_in}, has_acted={self._has_acted})"
+
+    @override
     def __eq__(self, other) -> bool:
         if not isinstance(other, Player):
             return False

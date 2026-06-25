@@ -99,6 +99,16 @@ class Table:
             return None
         return self._players[(self._small_blind_index - 1) % len(self._players)]
 
+    def __str__(self) -> str:
+        return (
+            f"players={[str(player) for player in self._players]}, "
+            f"pot={self.pot}, "
+            f"current_player={self.current_player.name if self.current_player else None})"
+        )
+
+    def __repr__(self) -> str:
+        return self.__str__()
+
     def add_player(self, player: Player) -> None:
         if self._has_started:
             raise ValueError("Cannot join a game that has already started.")
