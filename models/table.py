@@ -210,12 +210,12 @@ class Table:
         small_blind_bet, big_blind_bet = self._small_blind_value, self._big_blind_value
 
         if sbp := self.small_blind_player:
-            sbp.bet(small_blind_bet)
+            sbp.bet(small_blind_bet, acted=False)
         else:
             raise ValueError("Small blind player not found.")
 
         if bbp := self.big_blind_player:
-            bbp.bet(big_blind_bet)
+            bbp.bet(big_blind_bet, acted=False)
         else:
             raise ValueError("Big blind player not found.")
 
