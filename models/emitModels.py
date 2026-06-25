@@ -96,13 +96,18 @@ class EmitTable:
         }
 
     @classmethod
-    def from_table(cls, table: Table) -> "EmitTable":
+    def from_table(
+        cls, table: Table, player_with_hand: Player | None = None
+    ) -> "EmitTable":
         return cls(
             table_id=table.id,
             host_name=table.host_player.name,
             table_cards=[card.to_dict() for card in table.table_cards],
             pot=table.pot,
-            players=[EmitPlayer.from_player(player) for player in table.players],
+            players=[
+                EmitPlayer.from_player(player, show_hand=player_with_hand == player)
+                for player in table.players
+            ],
             current_player_name=table.current_player.name
             if table.current_player
             else None,
@@ -134,14 +139,16 @@ class EmitChangeTable:
 @dataclass
 class EmitPlayerAction:
     action: ClientEvent
-    table: Table
+    table: Table | EmitTable
     player: Player
     amount: int | None = None
 
     def to_dict(self):
         payload = {
             "action": self.action,
-            "table": EmitTable.from_table(self.table).to_dict(),
+            "table": EmitTable.from_table(self.table).to_dict()
+            if isinstance(self.table, Table)
+            else self.table.to_dict(),
             "player": EmitPlayer.from_player(self.player).to_dict(),
             "amount": self.amount if self.amount is not None else None,
         }

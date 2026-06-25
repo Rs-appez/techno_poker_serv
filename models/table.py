@@ -225,5 +225,5 @@ class Table:
     def _deal_player_cards(self, player: Player) -> None:
         player.add_card_to_hand(self._deck.draw())
         player.add_card_to_hand(self._deck.draw())
-        if self._emitter:
-            _ = asyncio.create_task(self._emitter.hand_dealt(player))
+        # if self._emitter:
+        #     _ = asyncio.create_task(self._emitter.hand_dealt(player))
