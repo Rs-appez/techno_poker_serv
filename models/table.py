@@ -169,14 +169,14 @@ class Table:
             winner.win(self.pot)
             self._reset_game()
             return True
-        if all(player.is_all_in for player in self._players if player.is_active):
-            self._showdown()
-            return True
 
-        if all(
-            player.current_bet == active_players[0].current_bet
+        max_bet = self.max_current_bet
+        betting_settled = all(
+            player.current_bet == max_bet or player.is_all_in
             for player in active_players
-        ):
+        )
+
+        if betting_settled and all(player.has_acted for player in active_players):
             if len(self._table_cards) == 0:
                 self._deal_table_cards(3)
             elif len(self._table_cards) < 5:
