@@ -52,6 +52,10 @@ class Player:
     def has_acted(self) -> bool:
         return self._has_acted
 
+    @has_acted.setter
+    def has_acted(self, value: bool):
+        self._has_acted = value
+
     @property
     def chips(self) -> int:
         return self._chips
