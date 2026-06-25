@@ -143,8 +143,7 @@ class Table:
     def call(self, player: Player) -> int:
         current_max_bet = self.max_current_bet
         call_amount = current_max_bet - player.current_bet
-        if call_amount > 0:
-            player.bet(call_amount)
+        player.bet(call_amount)
         self._advance_turn()
 
         return call_amount

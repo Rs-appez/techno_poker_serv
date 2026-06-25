@@ -79,7 +79,7 @@ class Player:
     def bet(self, amount: int, acted: bool = True):
         if amount > self._chips:
             raise ValueError("Not enough chips to bet that amount.")
-        elif amount <= 0:
+        elif amount < 0:
             raise ValueError("Bet amount must be greater than zero.")
 
         if acted:
