@@ -75,7 +75,7 @@ class LobbyManager:
             # Check if the player is already in the table (reconnection scenario)
             player = next((p for p in table.players if p.sid == sid), None)
             if player:
-                return await self.emit.joined_table(player, table)
+                return await self.emit.joined_table(player, table, is_silent=True)
             try:
                 player = Player(name=username, sid=sid)
                 self.players.add(player)

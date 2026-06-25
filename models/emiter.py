@@ -25,16 +25,21 @@ class Emitter:
         await self.sio.emit(ServerEvent.AUTH_TOKEN, auth_token.to_dict(), room=sid)
 
     async def joined_table(
-        self, new_player: Player, table: Table, is_joining: bool = True
+        self,
+        new_player: Player,
+        table: Table,
+        is_joining: bool = True,
+        is_silent: bool = False,
     ):
         emit_player = EmitPlayer.from_player(new_player)
         emit_table = EmitTable.from_table(table)
         emit_change_table = EmitChangeTable(
             emit_player, is_joining, table.host_player.name
         )
-        await self.sio.emit(
-            ServerEvent.JOINED_TABLE, emit_change_table.to_dict(), room=table.room
-        )
+        if not is_silent:
+            await self.sio.emit(
+                ServerEvent.JOINED_TABLE, emit_change_table.to_dict(), room=table.room
+            )
 
         emit_new_player = EmitPlayer.from_player(new_player, hide_hand=False)
         emit_table.players = [
