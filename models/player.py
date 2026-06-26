@@ -103,15 +103,11 @@ class Player:
         self._has_acted = True
         self._is_folded = True
 
-    def out(self):
-        if self._chips > 0:
-            raise ValueError("Player still has chips and cannot be out.")
-        self._hand = []
-        self._is_out = True
-
     def reset_for_new_round(self):
         self._hand = []
         self._current_bet = 0
         self._has_acted = False
         self._is_folded = False
         self._is_all_in = False
+        if self.chips <= 0:
+            self._is_out = True

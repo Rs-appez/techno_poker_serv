@@ -168,8 +168,6 @@ class Table:
         else:
             for player in self._players:
                 player.has_acted = False
-                if player.chips == 0:
-                    player.out()
 
             self._reset_current_player_index()
 
