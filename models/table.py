@@ -69,6 +69,10 @@ class Table:
         return self._players[self._current_player_index]
 
     @property
+    def is_round_ready(self) -> bool:
+        return all(player.is_round_ready for player in self._players)
+
+    @property
     def winner(self) -> Player | None:
         active_players = [player for player in self._players if player.is_active]
         if len(active_players) == 1:
@@ -244,7 +248,7 @@ class Table:
             if self._emitter:
                 asyncio.create_task(self._emitter.end_game(self, winner))
             return
-        if not all(player.is_round_ready for player in self._players):
+        if not self.is_round_ready:
             return
 
         self._nb_turns += 1
