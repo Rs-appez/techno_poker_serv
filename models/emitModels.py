@@ -73,6 +73,7 @@ class EmitHand:
 class EmitTable:
     table_id: int
     host_name: str
+    has_started: bool
     table_cards: list[dict[str, str | int]]
     pot: int
     players: list[EmitPlayer]
@@ -88,6 +89,7 @@ class EmitTable:
         return {
             "table_id": self.table_id,
             "host_name": self.host_name,
+            "has_started": self.has_started,
             "table_cards": self.table_cards,
             "pot": self.pot,
             "players": [player.to_dict() for player in self.players],
@@ -105,6 +107,7 @@ class EmitTable:
         return cls(
             table_id=table.id,
             host_name=table.host_player.name,
+            has_started=table.has_started,
             table_cards=[card.to_dict() for card in table.table_cards],
             pot=table.pot,
             players=[
