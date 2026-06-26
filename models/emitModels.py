@@ -28,6 +28,7 @@ class EmitPlayer:
     current_bet: int
     is_folded: bool
     is_out: bool
+    is_round_ready: bool
     hand: EmitHand | None = None
 
     def to_dict(self) -> dict[str, str | int | bool | list[dict[str, str]]]:
@@ -38,6 +39,7 @@ class EmitPlayer:
             "current_bet": self.current_bet,
             "is_folded": self.is_folded,
             "is_out": self.is_out,
+            "is_round_ready": self.is_round_ready,
         }
 
     @classmethod
@@ -48,6 +50,7 @@ class EmitPlayer:
             current_bet=player.current_bet,
             is_folded=player.is_folded,
             is_out=player.is_out,
+            is_round_ready=player.is_round_ready,
             hand=EmitHand.from_player(player) if show_hand else None,
         )
 
