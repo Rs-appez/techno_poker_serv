@@ -16,6 +16,8 @@ class Player:
         self._is_out = False
         self._has_acted = False
 
+        self._is_round_ready = True
+
     @property
     def name(self) -> str:
         return self._name
@@ -31,6 +33,14 @@ class Player:
     @property
     def hand(self) -> list[Card]:
         return self._hand
+
+    @property
+    def is_round_ready(self) -> bool:
+        return self._is_round_ready
+
+    @is_round_ready.setter
+    def is_round_ready(self, value: bool):
+        self._is_round_ready = value
 
     @property
     def is_folded(self) -> bool:
@@ -118,5 +128,6 @@ class Player:
         self._has_acted = False
         self._is_folded = False
         self._is_all_in = False
+        self._is_round_ready = False
         if self.chips <= 0:
             self._is_out = True
