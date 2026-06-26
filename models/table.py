@@ -68,6 +68,13 @@ class Table:
         return self._players[self._current_player_index]
 
     @property
+    def winner(self) -> Player | None:
+        active_players = [player for player in self._players if player.is_active]
+        if len(active_players) == 1:
+            return active_players[0]
+        return None
+
+    @property
     def table_cards(self) -> tuple[Card, ...]:
         return tuple(self._table_cards)
 
@@ -228,6 +235,10 @@ class Table:
         self.start_new_round()
 
     def start_new_round(self) -> None:
+        if winner := self.winner:
+            if self._emitter:
+                asyncio.create_task(self._emitter.end_game(self, winner))
+            return
         if not all(player.is_round_ready for player in self._players):
             return
         for player in self._players:

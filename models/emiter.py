@@ -85,3 +85,9 @@ class Emitter:
         await self.sio.emit(
             ServerEvent.END_ROUND, emit_table_final.to_dict(), room=table.room
         )
+
+    async def end_game(self, table: Table, winner: Player):
+        emit_winner = EmitPlayer.from_player(winner)
+        await self.sio.emit(
+            ServerEvent.END_GAME, emit_winner.to_dict(), room=table.room
+        )
