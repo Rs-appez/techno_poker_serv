@@ -72,3 +72,10 @@ class Emitter:
             await self.sio.emit(
                 ServerEvent.PLAYER_ACTION, emit_player_action.to_dict(), room=player.sid
             )
+
+    async def next_round(self, table: Table):
+        for player in table.players:
+            emit_table = EmitTable.from_table(table, player_with_hand=player)
+            await self.sio.emit(
+                ServerEvent.NEXT_ROUND, emit_table.to_dict(), room=player.sid
+            )
