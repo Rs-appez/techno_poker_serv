@@ -25,6 +25,7 @@ class Table:
 
         self._deck = Deck.create_standard_deck()
         self._has_started = False
+        self._nb_turns = 0
 
         self._orfan_pot = 0
         self._small_blind_value = 10
@@ -111,6 +112,10 @@ class Table:
             if self._players[index].is_active:
                 return self._players[index]
         return None
+
+    @property
+    def nb_turns(self) -> int:
+        return self._nb_turns
 
     def __str__(self) -> str:
         return (
@@ -235,6 +240,7 @@ class Table:
         self.start_new_round()
 
     def start_new_round(self) -> None:
+        self._nb_turns += 1
         if winner := self.winner:
             if self._emitter:
                 asyncio.create_task(self._emitter.end_game(self, winner))
