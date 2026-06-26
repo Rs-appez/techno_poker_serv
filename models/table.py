@@ -96,7 +96,13 @@ class Table:
     def big_blind_player(self) -> Player | None:
         if not self._players:
             return None
-        return self._players[(self._small_blind_index - 1) % len(self._players)]
+
+        n = len(self._players)
+        for i in range(n):
+            index = (self._small_blind_index - 1 - i) % n
+            if self._players[index].is_active:
+                return self._players[index]
+        return None
 
     def __str__(self) -> str:
         return (
@@ -212,9 +218,17 @@ class Table:
             player.reset_for_new_round()
             if player.is_active:
                 self._deal_player_cards(player)
-        self._small_blind_index = (self._small_blind_index + 1) % len(self._players)
+        self._update_blinds_index()
         self._reset_current_player_index()
         self._deal_blinds()
+
+    def _update_blinds_index(self) -> None:
+        n = len(self._players)
+        for _ in range(n):
+            self._small_blind_index = (self._small_blind_index + 1) % n
+            if self._players[self._small_blind_index].is_active:
+                return
+        raise ValueError("No active players found to assign small blind.")
 
     def _reset_current_player_index(self) -> None:
         self._current_player_index = self._small_blind_index
