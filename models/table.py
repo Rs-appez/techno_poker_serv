@@ -240,13 +240,14 @@ class Table:
         self.start_new_round()
 
     def start_new_round(self) -> None:
-        self._nb_turns += 1
         if winner := self.winner:
             if self._emitter:
                 asyncio.create_task(self._emitter.end_game(self, winner))
             return
         if not all(player.is_round_ready for player in self._players):
             return
+
+        self._nb_turns += 1
         for player in self._players:
             if player.is_active:
                 self._deal_player_cards(player)
