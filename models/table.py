@@ -234,13 +234,20 @@ class Table:
         return False
 
     def _reset_game(self) -> None:
+        if self._emitter:
+            from models.emitModels import EmitTable
+
+            final_players = {player for player in self._players if player.is_active}
+            asyncio.create_task(
+                self._emitter.end_round(
+                    self, EmitTable.from_table(self, player_with_hand=final_players)
+                )
+            )
         self._deck = Deck.create_standard_deck()
         self._table_cards = []
         self._orfan_pot = 0
         for player in self._players:
             player.reset_for_new_round()
-        if self._emitter:
-            asyncio.create_task(self._emitter.end_round(self))
         self.start_new_round()
 
     def start_new_round(self) -> None:

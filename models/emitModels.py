@@ -104,8 +104,10 @@ class EmitTable:
 
     @classmethod
     def from_table(
-        cls, table: Table, player_with_hand: Player | None = None
+        cls, table: Table, player_with_hand: Player | set[Player] = set()
     ) -> "EmitTable":
+        if isinstance(player_with_hand, Player):
+            player_with_hand = {player_with_hand}
         return cls(
             table_id=table.id,
             host_name=table.host_player.name,
@@ -114,7 +116,7 @@ class EmitTable:
             table_cards=[card.to_dict() for card in table.table_cards],
             pot=table.pot,
             players=[
-                EmitPlayer.from_player(player, show_hand=player_with_hand == player)
+                EmitPlayer.from_player(player, show_hand=(player in player_with_hand))
                 for player in table.players
             ],
             current_player_name=table.current_player.name

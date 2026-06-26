@@ -80,11 +80,11 @@ class Emitter:
                 ServerEvent.NEXT_ROUND, emit_table.to_dict(), room=player.sid
             )
 
-    async def end_round(self, table: Table):
-        emit_table_final = EmitTable.from_table(table)
-        await self.sio.emit(
-            ServerEvent.END_ROUND, emit_table_final.to_dict(), room=table.room
-        )
+    async def end_round(self, table: Table, emit_table_final: EmitTable):
+        result = emit_table_final.to_dict()
+        if table.winner:
+            result.update({"winner": [EmitPlayer.from_player(table.winner).to_dict()]})
+        await self.sio.emit(ServerEvent.END_ROUND, result, room=table.room)
 
     async def end_game(self, table: Table, winner: Player):
         emit_winner = EmitPlayer.from_player(winner)
