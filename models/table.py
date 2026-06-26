@@ -155,6 +155,12 @@ class Table:
         player.fold()
         self._advance_turn()
 
+    def all_in(self, player: Player) -> int:
+        all_in_amount = player.all_in()
+        self._advance_turn()
+
+        return all_in_amount
+
     def call(self, player: Player) -> int:
         current_max_bet = self.max_current_bet
         call_amount = current_max_bet - player.current_bet

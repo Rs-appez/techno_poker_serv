@@ -98,6 +98,15 @@ class Player:
         if self._chips == 0:
             self._is_all_in = True
 
+    def all_in(self) -> int:
+        self._has_acted = True
+        self._is_all_in = True
+        self._current_bet += self._chips
+        all_in_amount = self._chips
+        self._chips = 0
+
+        return all_in_amount
+
     def fold(self):
         self._hand = []
         self._has_acted = True

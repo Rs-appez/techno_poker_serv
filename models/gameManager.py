@@ -78,3 +78,17 @@ class GameManager:
 
             except ValueError as e:
                 await self.emit.error(sid, str(e))
+
+        @self.sio.on(ClientEvent.ALL_IN.value)
+        @auth
+        @table
+        @current_player
+        async def all_in(sid, data, *, player: Player, table: Table, **kwargs):
+            try:
+                amount_added = table.all_in(player)
+                await self.emit.player_action(
+                    ClientEvent.ALL_IN, table, player, amount_added
+                )
+
+            except ValueError as e:
+                await self.emit.error(sid, str(e))

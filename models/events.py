@@ -14,6 +14,7 @@ class ClientEvent(StrEnum):
     RAISE = "raise"
     FOLD = "fold"
     CALL = "call"
+    ALL_IN = "all_in"
 
 
 class ServerEvent(StrEnum):
