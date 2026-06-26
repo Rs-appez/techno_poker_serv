@@ -1,3 +1,4 @@
+import asyncio
 from random import shuffle
 from typing import TYPE_CHECKING
 
@@ -140,7 +141,7 @@ class Table:
             raise ValueError("At least two players are required to start the game.")
         shuffle(self._players)
         self._has_started = True
-        self._reset_game()
+        self.start_new_round()
 
     def place_bet(self, player: Player, amount: int) -> None:
         current_max_bet = self.max_current_bet
@@ -222,11 +223,21 @@ class Table:
         self._orfan_pot = 0
         for player in self._players:
             player.reset_for_new_round()
+
+        self.start_new_round()
+
+    def start_new_round(self) -> None:
+        if not all(player.is_round_ready for player in self._players):
+            return
+        for player in self._players:
             if player.is_active:
                 self._deal_player_cards(player)
         self._update_blinds_index()
         self._reset_current_player_index()
         self._deal_blinds()
+
+        if self._emitter:
+            asyncio.create_task(self._emitter.next_round(self))
 
     def _update_blinds_index(self) -> None:
         n = len(self._players)

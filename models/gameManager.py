@@ -37,6 +37,24 @@ class GameManager:
             except ValueError as e:
                 await self.emit.error(sid, str(e))
 
+        @self.sio.on(ClientEvent.ROUND_READY.value)
+        @auth
+        @table
+        async def round_ready(sid, _, table: Table, **kwargs):
+            try:
+                player = next((p for p in table.players if p.sid == sid), None)
+                if player is None:
+                    await self.emit.error(sid, "Player not found in the table.")
+                    return
+                if player.is_round_ready:
+                    await self.emit.error(sid, "Player is already ready for the round.")
+                    return
+                player.is_round_ready = True
+                table.start_new_round()
+                await self.emit.player_action(ClientEvent.ROUND_READY, table, player)
+            except ValueError as e:
+                await self.emit.error(sid, str(e))
+
         @self.sio.on(ClientEvent.RAISE.value)
         @auth
         @table
