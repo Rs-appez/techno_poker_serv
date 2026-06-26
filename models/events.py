@@ -33,4 +33,5 @@ class ServerEvent(StrEnum):
 
     NEXT_ROUND = "next_round"
 
+    END_ROUND = "end_round"
     END_GAME = "end_game"

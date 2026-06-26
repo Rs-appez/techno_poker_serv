@@ -79,3 +79,9 @@ class Emitter:
             await self.sio.emit(
                 ServerEvent.NEXT_ROUND, emit_table.to_dict(), room=player.sid
             )
+
+    async def end_round(self, table: Table):
+        emit_table_final = EmitTable.from_table(table)
+        await self.sio.emit(
+            ServerEvent.END_ROUND, emit_table_final.to_dict(), room=table.room
+        )

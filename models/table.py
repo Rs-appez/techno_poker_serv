@@ -223,7 +223,8 @@ class Table:
         self._orfan_pot = 0
         for player in self._players:
             player.reset_for_new_round()
-
+        if self._emitter:
+            asyncio.create_task(self._emitter.end_round(self))
         self.start_new_round()
 
     def start_new_round(self) -> None:
