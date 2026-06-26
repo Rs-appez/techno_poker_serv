@@ -203,7 +203,8 @@ class Table:
         self._orfan_pot = 0
         for player in self._players:
             player.reset_for_new_round()
-            self._deal_player_cards(player)
+            if player.is_active:
+                self._deal_player_cards(player)
         self._small_blind_index = (self._small_blind_index + 1) % len(self._players)
         self._reset_current_player_index()
         self._deal_blinds()
@@ -242,5 +243,3 @@ class Table:
     def _deal_player_cards(self, player: Player) -> None:
         player.add_card_to_hand(self._deck.draw())
         player.add_card_to_hand(self._deck.draw())
-        # if self._emitter:
-        #     _ = asyncio.create_task(self._emitter.hand_dealt(player))
