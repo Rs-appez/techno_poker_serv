@@ -50,7 +50,7 @@ class Player:
 
     @property
     def has_acted(self) -> bool:
-        return self._has_acted
+        return self._has_acted or self.is_all_in
 
     @has_acted.setter
     def has_acted(self, value: bool):

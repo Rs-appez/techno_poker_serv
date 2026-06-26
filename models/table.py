@@ -185,6 +185,13 @@ class Table:
             for player in active_players
         )
 
+        if (
+            betting_settled
+            and len([player for player in active_players if not player.is_all_in]) < 2
+        ):
+            self._showdown()
+            return True
+
         if betting_settled and all(player.has_acted for player in active_players):
             if len(self._table_cards) == 0:
                 self._deal_table_cards(3)
