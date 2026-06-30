@@ -159,35 +159,35 @@ class Table:
         self._has_started = True
         self.start_new_round()
 
-    def place_bet(self, player: Player, amount: int) -> None:
+    async def place_bet(self, player: Player, amount: int) -> None:
         current_max_bet = self.max_current_bet
         if player.current_bet + amount < current_max_bet:
             raise ValueError(
                 f"Bet must be at least {current_max_bet - player.current_bet} to call."
             )
         player.bet(amount)
-        self._advance_turn()
+        await self._advance_turn()
 
-    def fold(self, player: Player) -> None:
+    async def fold(self, player: Player) -> None:
         player.fold()
-        self._advance_turn()
+        await self._advance_turn()
 
-    def all_in(self, player: Player) -> int:
+    async def all_in(self, player: Player) -> int:
         all_in_amount = player.all_in()
-        self._advance_turn()
+        await self._advance_turn()
 
         return all_in_amount
 
-    def call(self, player: Player) -> int:
+    async def call(self, player: Player) -> int:
         current_max_bet = self.max_current_bet
         call_amount = current_max_bet - player.current_bet
         player.bet(call_amount)
-        self._advance_turn()
+        await self._advance_turn()
 
         return call_amount
 
-    def _advance_turn(self) -> None:
-        if not self._check_end_round():
+    async def _advance_turn(self) -> None:
+        if not await self._check_end_round():
             n = len(self._players)
             for _ in range(n):
                 self._current_player_index = (self._current_player_index + 1) % n
@@ -199,13 +199,13 @@ class Table:
 
             self._reset_current_player_index()
 
-    def _check_end_round(self) -> bool:
+    async def _check_end_round(self) -> bool:
         active_players = [player for player in self._players if player.is_active]
 
         if len(active_players) == 1:
             winner = active_players[0]
             winner.win(self.pot)
-            self._reset_game()
+            await self._reset_game()
             return True
 
         max_bet = self.max_current_bet
@@ -218,7 +218,7 @@ class Table:
             betting_settled
             and len([player for player in active_players if not player.is_all_in]) < 2
         ):
-            self._showdown()
+            await self._showdown()
             return True
 
         if betting_settled and all(player.has_acted for player in active_players):
@@ -227,21 +227,19 @@ class Table:
             elif len(self._table_cards) < 5:
                 self._deal_table_cards(1)
             else:
-                self._showdown()
+                await self._showdown()
 
             return True
 
         return False
 
-    def _reset_game(self) -> None:
+    async def _reset_game(self) -> None:
         if self._emitter:
             from models.emitModels import EmitTable
 
             final_players = {player for player in self._players if player.is_active}
-            asyncio.create_task(
-                self._emitter.end_round(
-                    self, EmitTable.from_table(self, player_with_hand=final_players)
-                )
+            await self._emitter.end_round(
+                self, EmitTable.from_table(self, player_with_hand=final_players)
             )
         self._deck = Deck.create_standard_deck()
         self._table_cards = []
@@ -280,7 +278,7 @@ class Table:
     def _reset_current_player_index(self) -> None:
         self._current_player_index = self._small_blind_index
 
-    def _showdown(self) -> None:
+    async def _showdown(self) -> None:
         self._deal_table_cards(5 - len(self._table_cards))
         winners = find_winner(
             self._table_cards, [p for p in self._players if p.is_active]
@@ -289,7 +287,7 @@ class Table:
         for winner in winners:
             winner.win(pot_share)
 
-        self._reset_game()
+        await self._reset_game()
 
     def _deal_blinds(self) -> None:
         small_blind_bet, big_blind_bet = self._small_blind_value, self._big_blind_value

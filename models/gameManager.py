@@ -66,7 +66,7 @@ class GameManager:
                 return
 
             try:
-                table.place_bet(player, amount)
+                await table.place_bet(player, amount)
                 await self.emit.player_action(ClientEvent.RAISE, table, player, amount)
 
             except ValueError as e:
@@ -78,7 +78,7 @@ class GameManager:
         @current_player
         async def fold(sid, data, *, player: Player, table: Table, **kwargs):
             try:
-                table.fold(player)
+                await table.fold(player)
                 await self.emit.player_action(ClientEvent.FOLD, table, player)
             except ValueError as e:
                 await self.emit.error(sid, str(e))
@@ -89,7 +89,7 @@ class GameManager:
         @current_player
         async def call(sid, data, *, player: Player, table: Table, **kwargs):
             try:
-                amount_to_call = table.call(player)
+                amount_to_call = await table.call(player)
                 await self.emit.player_action(
                     ClientEvent.CALL, table, player, amount_to_call
                 )
@@ -103,7 +103,7 @@ class GameManager:
         @current_player
         async def all_in(sid, data, *, player: Player, table: Table, **kwargs):
             try:
-                amount_added = table.all_in(player)
+                amount_added = await table.all_in(player)
                 await self.emit.player_action(
                     ClientEvent.ALL_IN, table, player, amount_added
                 )
