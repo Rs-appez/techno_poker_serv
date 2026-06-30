@@ -22,6 +22,7 @@ class Table:
         self._players = [host_player]
         if players:
             self._players.extend(players)
+        self._round_winners: set[Player] = set()
 
         self._deck = Deck.create_standard_deck()
         self._has_started = False
@@ -78,6 +79,10 @@ class Table:
         if len(active_players) == 1:
             return active_players[0]
         return None
+
+    @property
+    def round_winners(self) -> set[Player]:
+        return self._round_winners
 
     @property
     def table_cards(self) -> tuple[Card, ...]:
@@ -280,9 +285,9 @@ class Table:
 
     async def _showdown(self) -> None:
         self._deal_table_cards(5 - len(self._table_cards))
-        winners = find_winner(
-            self._table_cards, [p for p in self._players if p.is_active]
-        )
+        active_players = [player for player in self._players if player.is_active]
+        winners = find_winner(self._table_cards, active_players)
+        self._round_winners = set(winners)
         pot_share = self.pot // len(winners)
         for winner in winners:
             winner.win(pot_share)
