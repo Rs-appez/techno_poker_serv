@@ -29,6 +29,7 @@ class Table:
         self._nb_turns = 0
 
         self._orfan_pot = 0
+        self._has_showndown = False
         self._small_blind_value = 10
         self._big_blind_value = 20
 
@@ -242,13 +243,18 @@ class Table:
         if self._emitter:
             from models.emitModels import EmitTable
 
-            final_players = {player for player in self._players if player.is_active}
+            final_players = (
+                {player for player in self._players if player.is_active}
+                if self._has_showndown
+                else set()
+            )
             await self._emitter.end_round(
                 self, EmitTable.from_table(self, player_with_hand=final_players)
             )
         self._deck = Deck.create_standard_deck()
         self._table_cards = []
         self._orfan_pot = 0
+        self._has_showndown = False
         for player in self._players:
             player.reset_for_new_round()
         self.start_new_round()
@@ -284,6 +290,7 @@ class Table:
         self._current_player_index = self._small_blind_index
 
     async def _showdown(self) -> None:
+        self._has_showndown = True
         self._deal_table_cards(5 - len(self._table_cards))
         active_players = [player for player in self._players if player.is_active]
         winners = find_winner(self._table_cards, active_players)
