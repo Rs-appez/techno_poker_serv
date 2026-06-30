@@ -51,9 +51,7 @@ class EmitPlayer:
             is_folded=player.is_folded,
             is_out=player.is_out,
             is_round_ready=player.is_round_ready,
-            hand=EmitHand.from_player(player)
-            if show_hand and not player.is_folded
-            else None,
+            hand=EmitHand.from_player(player) if show_hand else None,
         )
 
 
